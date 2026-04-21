@@ -1,0 +1,83 @@
+:root {
+  --skeleton-w: inherit;
+  --skeleton-h: inherit;
+}
+
+body[data-theme='light'] {
+  .skeleton {
+    background-color: #eee;
+  }
+
+  .skeleton::after {
+    background-image: linear-gradient(90deg, #eee0, #fff 50%, #eee0 100%);
+  }
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.flex.row {
+  flex-direction: row;
+}
+
+.skeleton {
+  width: calc(var(--skeleton-w) * 1px);
+  height: calc(var(--skeleton-h) * 1px);
+  background-color: #8882;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  color: transparent;
+  isolation: isolate;
+  contain: layout size;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%);
+
+  transform: translateX(-100%);
+  animation: loading-skeleton 1.5s infinite;
+  will-change: transform;
+}
+
+
+.skeleton-line {
+  contain: layout size;
+  display: block;
+  backface-visibility: hidden;
+  line-height: 1.5;
+  width: var(--skeleton-w, 40%);
+  height: var(--skeleton-h, .85em);
+  margin-bottom: inherit;
+}
+
+
+
+@media (prefers-color-scheme: light) {
+  .skeleton {
+    background-color: #eee;
+  }
+
+  .skeleton::after {
+    background-image: linear-gradient(90deg, #eee0, #fff 50%, #eee0 100%);
+  }
+}
+
+@keyframes loading-skeleton {
+  100% {
+    transform: translateX(100%);
+  }
+}

@@ -1,43 +1,51 @@
+import { jwtDecode } from "jwt-decode";
 import { redirect, type LoaderFunctionArgs } from "react-router-dom";
-import { API_URL, getProjects, getTasks } from "../api";
-import authHeader, { requireAuth } from "./auth";
-import type { ErrorDetail } from "../entities/entity";
+import { getProjects, UserProfile } from "../api";
+import { requireAuth } from "./auth";
 
-export function loginLoader({ request }: LoaderFunctionArgs) {
-  return new URL(request.url).searchParams.get('message');
+
+
+export async function authenticateLoader(request: Request) {
+  await requireAuth(request);
 }
 
+
+export async function userProfileLoader({ params, request }: LoaderFunctionArgs) {
+  await authenticateLoader(request);
+  const { username } = params;
+  const name = username ?? '';
+  const user = await UserProfile(name);
+
+  return { user }
+}
 
 export async function projectsLoader({ params, request }: LoaderFunctionArgs) {
+  await authenticateLoader(request);
   const { username } = params;
-  await requireAuth(request);
-  return { projects: getProjects(username ?? '') }
+  const name = username ?? '';
+
+  return { projectsResp: getProjects(name) }
 }
 
 
-export async function tasksLoader({ params, request }: LoaderFunctionArgs) {
-  const { username } = params;
-  await requireAuth(request);
-  return { tasks: getTasks(username ?? '', params.projectID ?? '') }
-}
 
 
-export async function projectsRedirect({ request }: LoaderFunctionArgs) {
-  await requireAuth(request);
-  const userMeUrl = `${API_URL}/users/me`;
-
-  const headers = { ...authHeader() };
-
-  const resp = await fetch(userMeUrl, {
-    method: "GET",
-    headers,
-  });
-
-  if (!resp.ok) {
-    const errorData = await resp.json() as ErrorDetail;
+export function projectsRedirectLoader() {
+  try {
+    const token = localStorage.getItem('token');
+    console.log('hello from get user');
+    const authToken = token ? JSON.parse(token) as string : null;
+    if (authToken) {
+      const decoded: { sub: string } = jwtDecode(authToken);
+      return redirect(decoded.sub);
+    }
     // eslint-disable-next-line @typescript-eslint/only-throw-error
-    throw { status: resp.status, statusText: resp.statusText, message: errorData.detail };
+    else throw redirect('/login');
+
+  } catch (e: unknown) {
+    console.error('Error when accessing token', e);
+    // eslint-disable-next-line @typescript-eslint/only-throw-error
+    throw redirect('/login');
   }
-  const user = await resp.json() as { username: string }
-  return redirect(user.username);
+
 }

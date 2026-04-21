@@ -1,51 +1,73 @@
+import { lazy } from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import './App.css';
-import Tasks from './components/Tasks';
 import Login from './Views/Login';
-import ProjectLayout from './Views/ProjectView';
-import SignUp from './Views/SignUp';
-import { loginAction, logoutAction, projectAction, signupAction } from './utils/actions';
-import { loginLoader, projectsLoader, projectsRedirect, tasksLoader } from './utils/loaders';
-import NotFound from './components/NotFound';
-import Error from './components/Error';
+import DashboardView from './Views/DashboardView';
+import Register from './Views/Register';
+import UsersView from './Views/UsersView';
+import ProjectLayout from './components/projects/ProjectsLayout';
+import { loginAction, logoutAction, profileUploadAction, projectAction, signupAction, userProfileAction } from './utils/actions';
+import { projectsLoader, projectsRedirectLoader, userProfileLoader } from './utils/loaders';
+
+const ProfileUpload = lazy(() => import('./Views/ProfileUpload'));
+const Logout = lazy(() => import('./Views/Logout'));
+const Error = lazy(() => import('./components/general/Error'));
+
+const NotFound = lazy(() => import('./components/general/NotFound'));
 
 
 
 const router = createBrowserRouter(createRoutesFromElements(
   <Route path={'/'}>
-    <Route index element={<h1>Homepage</h1>}/>
+    <Route index element={<h1>Homepage</h1>} />
+    {/* TODO: add a redirect page */}
+    <Route path={'projects'}
+      id='project-root'
+      element={<ProjectLayout />}
+      loader={userProfileLoader}
+      errorElement={<Error />}>
+
+      <Route index element={<></>} loader={projectsRedirectLoader} />
+
+      <Route
+        path={':username'}
+        element={<DashboardView />}
+        loader={projectsLoader}
+        action={projectAction} >
+
+        <Route
+          path='profile'
+          id='user-profile'
+          element={<UsersView />}
+          action={userProfileAction}>
+          <Route
+            path={'upload'}
+            action={profileUploadAction}
+            element={<ProfileUpload />}
+          />
+          <Route
+            path={'logout'}
+            element={<Logout />}
+            action={logoutAction} />
+        </Route>
+
+      </Route>
+
+    </Route>
+
     <Route
       path={'login'}
       element={<Login />}
-      loader={loginLoader}
       errorElement={<Error />}
-      action={loginAction}/>
+      action={loginAction} />
 
     <Route
       path='signup'
-      element={<SignUp />}
+      element={<Register />}
       action={signupAction}
-      errorElement={<Error />}/>
+      errorElement={<Error />} />
 
-    <Route
-      path='/projects'
-      element={<></>}
-      loader={projectsRedirect}
-      errorElement={<Error />}/>
-
-    <Route
-      path='/projects/:username'
-      element={<ProjectLayout />}
-      loader={projectsLoader}
-      action={projectAction}
-      errorElement={<Error />}
-    >
-      <Route index element={<Tasks />} loader={tasksLoader}/>
-      <Route path=':projectID' element={<Tasks />} loader={tasksLoader}/>
-    </Route>
-    
-    <Route path={'logout'} action={logoutAction} errorElement={<Error />}/>
-    <Route path='*' element={<NotFound />}/>
+    <Route path='*' element={<NotFound />} />
   </Route>))
 
 

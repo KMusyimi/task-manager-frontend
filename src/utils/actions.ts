@@ -1,107 +1,163 @@
 import { type ActionFunctionArgs, redirect } from "react-router-dom";
-import { addProject, createAccount, deleteProject, duplicateProject, loginUser, logout, updateProject } from "../api";
-import type { FormParams } from "../entities/entity";
+import { addProject, createAccount, deleteProject, duplicateProject, editUserProfile, loginUser, logout, updateProject, uploadProfileImage } from "../api";
 import { requireAuth } from "./auth";
+import { processFormData } from "./utils";
+import type { ActionFuncError, FormParams } from "../models/entity";
+
+const currentTimestamp = Date.now();
+
+
+
+const projectActionObj = {
+  add: async ({ username, payload }: { username: string, payload: FormParams }) => {
+    const resp = await addProject(username, payload);
+    if ('isError' in resp) {
+      console.error('projectAction add errors ->', resp.message)
+      return { error: resp.message, status: resp.status, timestamp: currentTimestamp }
+    }
+    return redirect(`.?projectID=${resp.projectID.toString()}&message=${resp.message}`);
+  },
+
+  edit: async ({ username, payload }: { username: string, payload: FormParams }) => {
+    const resp = await updateProject(username, payload);
+    if ('isError' in resp) {
+      console.error('projectAction edit errors ->', resp.message)
+      return { error: resp.message, status: resp.status, timestamp: currentTimestamp }
+    }
+    return redirect(`.?projectID=${resp.projectID.toString()}&message=${resp.message}`);
+  },
+
+  duplicate: async ({ username, payload }: { username: string, payload: FormParams }) => {
+    const resp = await duplicateProject(username, payload.projectID);
+    if ('isError' in resp) {
+      console.error('projectAction duplicate errors ->', resp.message)
+      return { error: resp.message, status: resp.status, timestamp: currentTimestamp }
+    }
+    return redirect(`.?projectID=${resp.projectID.toString()}&message=${resp.message}`);
+  },
+
+  delete: async ({ username, payload }: { username: string, payload: FormParams }) => {
+    const resp = await deleteProject(username, payload.projectID);
+    if ('isError' in resp) {
+      console.error('projectAction delete errors ->', resp.message)
+      return { error: resp.message, status: resp.status, timestamp: currentTimestamp }
+    }
+    return redirect(`.?message=${resp.message}`);
+  }
+}
+
 
 
 export async function signupAction({ request }: ActionFunctionArgs) {
-  try {
-    const formData = await request.formData();
-    const data = Object.fromEntries(formData);
-    const payload: FormParams = {}
-
-    // TODO: make the code into a helper function
-    Object.keys(data).forEach(item => {
-      payload[item] = data[item] as string;
-    })
-
-    const response = await createAccount(payload);
-    return redirect(`/login?message=${response.message}`);
-  } catch (e) {
-    return e as { message: string }
+  const payload = await processFormData(request);
+  const response = await createAccount(payload);
+  if ('isError' in response) {
+    console.error('signup action errors ->', response.message)
+    return {
+      error: response.message,
+      status: response.status,
+      timestamp: currentTimestamp
+    }
   }
+  return redirect(`/login?message=${response.message}`);
 }
 
 
 export async function loginAction({ request }: ActionFunctionArgs) {
-  try {
-    const redirectPath = new URL(request.url).searchParams.get('redirect');
-    const formData = await request.formData();
-    const data = Object.fromEntries(formData);
-    const payload: FormParams = {};
+  const url = new URL(request.url);
+  const searchParams = url.searchParams;
+  const redirectPath = searchParams.get("redirect");
 
-    Object.keys(data).forEach(item => {
-      payload[item] = data[item] as string
-    });
-    const loginResp = await loginUser(payload);
+  const logoutRegex = /\/profile\/logout\/?$/i;
 
-    return redirect(redirectPath ?? `/projects/${loginResp.user}`);
+  const cleanUrl = redirectPath?.replace(logoutRegex, "") ?? redirectPath;
 
-  } catch (e: unknown) {
-    return e as { message: string }
+  const payload = await processFormData(request);
+  const response = await loginUser(payload);
+
+  if ('isError' in response) {
+    console.error('login action errors ->', response.message)
+    return {
+      error: response.message,
+      status: response.status,
+      timestamp: currentTimestamp
+    }
   }
+  const { login_username, message } = response;
+  const path = cleanUrl ?? `/projects/${login_username}`;
+
+  return redirect(`${path}?message=${message}`);
+
 }
 
 
-export async function logoutAction({ request }: ActionFunctionArgs) {
-  try {
-    // TODO: delete console logging
-    console.log('logging out...')
-    await requireAuth(request);
-    const data = await logout();
-    localStorage.removeItem('token');
-    return redirect(`/login/?message=${data.message}`)
-
-  } catch (e: unknown) {
-    if (e instanceof Error) {
-      return e.message
-    }
-    return e as { message: string };
+export async function logoutAction() {
+  const response = await logout();
+  if ('isError' in response) {
+    console.error('logoutAction errors ->', response.message)
+    return { error: response.message, status: response.status, timestamp: currentTimestamp }
   }
+
+  localStorage.removeItem('token');
+  return redirect(`/login/?message=${response.message}`);
 }
 
 
 // Projects action 
 export async function projectAction({ params, request }: ActionFunctionArgs) {
-  try {
-    // TODO: change open value to 1 and close value to 0
-    // Check if token id still valid and refresh token
-    await requireAuth(request);
-  
-    const { username } = params
-    const formData = await request.formData();
-    const data = Object.fromEntries(formData);
+  const { username } = params;
+  if (!username) {
+    return { error: 'Username is missing', status: 401, timestamp: currentTimestamp };
+  }
+  const payload = await processFormData(request);
+  const key = payload.intent as keyof typeof projectActionObj;
+  return await projectActionObj[key]({ username, payload });
+}
 
-    const payload: FormParams = {};
 
-    Object.keys(data).forEach(el => {
-      payload[el] = data[el] as string;
-    });
 
-    switch (payload.intent) {
-      case 'add':
-        {
-          const project = await addProject(username ?? '', payload);
-          return redirect(`./${project.projectID.toString()}`);
-        }
+export async function userProfileAction({ params, request }: ActionFunctionArgs) {
 
-      case 'edit':
-        {
-          // ed-f stands for edit form
-          const project = await updateProject(username ?? '', payload);
-          return redirect(`./${project.projectID.toString()}?edt-form=close&message=${project.message}`);
-        }
-      case 'duplicate': {
-        const project = await duplicateProject(username ?? '', payload.projectID);
-        return redirect(`./${project.projectID.toString()}?message=${project.message}`);
+  const { username } = params;
+  if (!username) {
+    return { error: 'Username is missing', status: 401 };
+  }
+  await requireAuth(request);
+  const payload = await processFormData(request);
+
+  switch (payload.intent) {
+    case 'edit-profile': {
+      const response = await editUserProfile(username, payload);
+      if ('isError' in response) {
+        console.error('userProfileAction edit-profile errors ->', response.message)
+        return { error: response.message, status: response.status, timestamp: currentTimestamp } as ActionFuncError
       }
-      case 'delete': {
-        const results = await deleteProject(username ?? '', payload.projectID);
-        return redirect(`.?message=${results.message}`);
-      }
+      const { loginUsername: login_username, message } = response;
+      return redirect(`/projects/${login_username}/profile?message=${message}`);
+    }
+    default: {
+      return { error: 'Invalid submit intent', status: 400, timestamp: currentTimestamp } as ActionFuncError
     }
   }
-  catch (e: unknown) {
-    return e as { message: string }
+
+}
+// TODO: add timestamp
+export async function profileUploadAction({ params, request }: ActionFunctionArgs) {
+  const { username } = params;
+
+  if (!username) {
+    return { success: false, error: 'Username is missing', status: 401, message: null };
   }
+
+  await requireAuth(request);
+
+  const formData = await request.formData();
+  const response = await uploadProfileImage(username, formData);
+
+  if ('isError' in response) {
+    console.error('userProfileAction edit-profile errors ->', response.message)
+    return { success: false, error: response.message, status: response.status, message: null }
+  }
+
+  return { success: true, message: response.message, error: null, status: null }
 }

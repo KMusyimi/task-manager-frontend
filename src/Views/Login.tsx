@@ -1,50 +1,68 @@
-import { useCallback, useState, type JSX } from "react";
-import { Form, useActionData, useLoaderData, useNavigation } from "react-router-dom";
-import PasswordInput from "../components/PasswordInput";
-import type { UserValidationFields } from "../entities/entity";
-import { isValidInput } from "../utils/utils";
-import type { loginLoader } from "../utils/loaders";
+import { lazy, memo, Suspense, useMemo, type JSX } from "react";
+import { Link, useActionData } from "react-router-dom";
+
 import type { loginAction } from "../utils/actions";
+import useActionError from "../hooks/ActionErrorHook";
+import type { ActionFuncError } from "../models/entity";
+import { useToastMessage } from "../hooks/MessageHandlerHook";
+import LogoImg from "../components/general/LogoImg";
+import Skeleton from "../components/skeleton/Skeleton";
+
+const LoginForm = lazy(() => import("../components/users/LoginForm"));
+
+const LoginFormSkeleton = memo(() => {
+  const skeletons = useMemo(() => Array.from({ length: 2 }), []);
+
+  return (<>
+    <div className="auth-form">
+      {skeletons.map((_, i) => (
+        <div key={`sk-${i.toString()}`} className="input-wrapper">
+          <Skeleton type="line" className="label-f14" width={'25%'} />
+          <Skeleton type="box" height={50} />
+        </div>))}
+      <div className="btn-wrapper">
+        <Skeleton type="line" width={'65%'} />
+        <Skeleton type="box" className=" submit--btn" />
+      </div>
+    </div>
+  </>)
+})
 
 
-export default function Login(): JSX.Element {
+function Login(): JSX.Element {
+  const errData = useActionData<typeof loginAction>();
+  useToastMessage();
+  useActionError(errData as ActionFuncError);
 
-  const [, setIsValid] = useState<UserValidationFields>({ password: null, email: null });
-
-  const errMsg = useActionData<typeof loginAction>();
-  const message = useLoaderData<typeof loginLoader>();
-  const navigation = useNavigation();
-  const status = navigation.state;
-
-  const handleBlur = useCallback((e: React.FormEvent<HTMLInputElement>) => {
-    const { type, value } = e.target as HTMLInputElement;
-    if (value !== '') {
-      setIsValid(prev => ({ ...prev, [type]: isValidInput(type, value) }));
-    }
-  }, []);
 
   return (
     <>
-      {(message ?? errMsg) && <p>{errMsg?.message ?? message}</p>}
-      <Form method="post" replace={true}>
-        <label htmlFor="username">Enter username or email</label>
+      <div className="container auth-container auth-container--login">
+        <div className="bgi-img-wrapper">
+          <picture>
+            <source media="(min-width: 768px)" srcSet="/images/bgi-login-desktop.webp"></source>
+            <img src="/images/bgi-login-mobile.webp" alt="An image of a elephant with long tasks" fetchPriority="high" />
+          </picture>
+          <LogoImg />
+        </div>
+        <div className="bg--form">
+          <div className="login-form-container">
+            <hgroup>
+              <h1>Welcome back to Tasker!</h1>
+              <h4>Login</h4>
+            </hgroup>
+            <Suspense fallback={<LoginFormSkeleton />}>
+              <LoginForm />
+            </Suspense>
+          </div>
 
-        <input
-          type="text"
-          id={'username'}
-          className="input-txt"
-          name="username"
-          placeholder="username or email"
-          autoComplete="email"
-          required />
-
-        <PasswordInput handleBlur={handleBlur} />
-
-        <button
-          type='submit'
-          className='fw-700'
-          disabled={status === 'submitting'}>{status === 'submitting' ? "Logging in..." : "Login"}</button>
-      </Form>
+          <footer className="user-footer">
+            <p>Don't have an account?<Link className="signup-link" to={'/signup'}>Register</Link></p>
+          </footer>
+        </div>
+      </div>
     </>
   )
 }
+
+export default memo(Login);

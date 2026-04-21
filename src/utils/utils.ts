@@ -1,6 +1,15 @@
-export const defaultColors = ['#89CFF0', "#6495ED", "#5D3FD3", '#CCCCFF', '#96DED1', '#F8C8DC', '#DC143C', '#D8BFD8', "#93C572", '#FFDEAD', "#E0115F", "#27907A"]
+import type { FormParams } from "../models/entity";
 
 
+
+
+export const IconColors = {
+  idle: "#6b7280",      // Gray
+  selected: "#3b82f6",  // Blue
+  uploading: "#f59e0b", // Amber/Orange
+  success: "#10b981",   // Green
+  error: "#ef4444"      // Red
+};
 
 export function isValidInput(type: string, value: string) {
   switch (type) {
@@ -25,3 +34,20 @@ function isValidEmail(email: string): boolean {
 export function capitalize(myStr: string) {
   return myStr.charAt(0).toLocaleUpperCase() + myStr.slice(1,)
 }
+
+export async function processFormData(request: Request): Promise<FormParams> {
+  const formData = await request.formData();
+  const data = Object.fromEntries(formData);
+  const payload: FormParams = {};
+
+  Object.keys(data).forEach(el => {
+    payload[el] = data[el] as string;
+  });
+  return payload;
+}
+
+export const formatFileSize = (bytes: number) => {
+  if (bytes < 1024) { return `${bytes.toFixed(1)} Bytes`; }
+  else if (bytes < 1048576) { return (bytes / 1024).toFixed(1) + " KB"; }
+  else { return (bytes / 1048576).toFixed(1) + " MB" };
+};

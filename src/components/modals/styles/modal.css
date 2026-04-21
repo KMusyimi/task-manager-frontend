@@ -1,0 +1,86 @@
+:root{
+  --modal-icon-size: 50px;
+}
+
+.modal-content {
+  background-color: var(--bg-color-primary);
+  width: min(90%, 375px);
+  margin: auto;
+  padding: 1.5em 1.15em;
+  text-align: center;
+  border-radius: 1em;
+}
+
+.modal-content i {
+
+  background-color: var(--secondary-red);
+  border-radius: 50%;
+  width: var( --modal-icon-size);
+  isolation: isolate;
+  content-visibility: auto;
+  contain-intrinsic-size: var( --modal-icon-size);
+  height: var( --modal-icon-size);
+  margin: auto;
+  padding: .35em;
+}
+
+.modal-content svg {
+  font-size: 2rem;
+}
+
+.modal-content h1 {
+  font-size: 1.75rem;
+  padding-block: .5em;
+  margin-bottom: .35em;
+}
+
+.modal-content p {
+  color: var(--color-grey);
+  font-weight: 500;
+  margin-bottom: 1.5em;
+}
+
+.modal-content p .text-bold {
+  font-weight: bold;
+  color: var(--primary-red);
+}
+
+
+.modal-content form {
+  height: 100%;
+}
+
+
+.modal-content .modal--grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-template-rows: 1fr;
+  align-items: center;
+  gap: .75em;
+}
+
+.modal-content .modal--grid button,
+.modal-content .logout-wrapper a {
+  width: 100%;
+  height: inherit;
+  font-weight: bold;
+  padding: .75em;
+  border-radius: .75em;
+}
+
+.modal-content .delete-project--form button[type='button'],
+.modal-content .logout-wrapper a {
+  background-color: var(--bg-color-secondary);
+  color: var(--color-grey);
+}
+
+
+.modal-content .submit-btn {
+  background-color: var(--secondary-red);
+  color: #e24749;
+}
+
+.modal-content .submit-btn:focus,
+.modal-content .submit-btn:focus-visible {
+  outline: 4px solid rgb(240, 185, 174);
+}
