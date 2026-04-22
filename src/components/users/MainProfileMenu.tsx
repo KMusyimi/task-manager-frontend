@@ -1,4 +1,4 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import type { MenuTypes } from "../../Views/UsersView";
 
@@ -9,16 +9,24 @@ const LoadLogout = () => import('../../Views/Logout');
 
 interface UserProfileTypes {
   isActive: boolean;
-  moveOverlayForward: () => void
+  search: string;
   navigateTo: (menuType: MenuTypes) => void
 }
 
-interface ProfileItemsProps {
+interface MenuConfigTypes {
+  id: MenuTypes;
   iconName: iconKeyTypes;
   menuName: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
+type ProfileItemsProps = Omit<MenuConfigTypes, 'id'>;
+
+const MENU_CONFIG = [
+  { id: 'myProfile', label: 'My Profile', icon: 'FaUserPen' },
+  { id: 'settings', label: 'Settings', icon: 'FaGear' },
+  { id: 'changePw', label: 'Change Password', icon: 'FaLock' }
+];
 
 const ProfileButton = memo(({ onClick, iconName, menuName }: ProfileItemsProps) => {
   return (
@@ -32,8 +40,17 @@ const ProfileButton = memo(({ onClick, iconName, menuName }: ProfileItemsProps) 
   )
 })
 
-function MainProfileMenu({ isActive, moveOverlayForward, navigateTo }: UserProfileTypes) {
+function MainProfileMenu({ isActive, search, navigateTo }: UserProfileTypes) {
   const activeCls = isActive ? 'main-menu active' : 'main-menu';
+
+  const metadata: MenuConfigTypes[] = useMemo(() =>
+    MENU_CONFIG.map(item => ({
+      id: item.id as MenuTypes,
+      iconName: item.icon as iconKeyTypes,
+      menuName: item.label,
+      onClick: () => { navigateTo(item.id as MenuTypes) }
+    }))
+    , [navigateTo]);
 
   const onMouseEnter = useCallback(() => {
     LoadLogout().catch((e: unknown) => { console.error("could not prefetch nested list ", e) })
@@ -42,24 +59,15 @@ function MainProfileMenu({ isActive, moveOverlayForward, navigateTo }: UserProfi
   return (
     <div className={activeCls}>
       <div className={`profile-container menu-item`} >
-        
-        <ProfileButton
-          iconName={"FaUserPen"}
-          menuName={"My Profile"}
-          onClick={() => { navigateTo('myProfile') }} />
-
-        <ProfileButton
-          iconName={"FaGear"}
-          menuName={"Settings"}
-          onClick={() => { navigateTo('settings') }} />
-
-        <ProfileButton
-          iconName={"FaLock"}
-          menuName={"Change Password"}
-          onClick={() => { navigateTo('changePw') }} />
+        {metadata.map(data =>
+          <ProfileButton
+            key={data.id}
+            iconName={data.iconName}
+            menuName={data.menuName}
+            onClick={data.onClick} />)}
       </div>
-      <Link to={'logout'} relative='path'
-        onClick={moveOverlayForward}
+      <Link to={{ pathname: 'logout', search: search ? `?${search}&z-i=500` : '?z-i=500' }}
+        relative='path'
         onMouseEnter={onMouseEnter}
         className={'logout--link menu-text'}>
         <IconWrapper name='FaArrowRightFromBracket' />
@@ -68,5 +76,7 @@ function MainProfileMenu({ isActive, moveOverlayForward, navigateTo }: UserProfi
     </div>
   )
 }
+
+ProfileButton.displayName = 'ProfileButton';
 
 export default memo(MainProfileMenu);

@@ -299,3 +299,26 @@ export async function uploadProfileImage(username: string, formData: FormData) {
   const respData = await resp.json() as { message: string }
   return respData;
 }
+
+export async function changePassword(username: string, formData: FormParams) {
+  const url = `${API_URL}/users/${username}/change-password`;
+
+  const headers = { ...authHeader() };
+
+  const resp = await fetch(url, {
+    headers,
+    method: "POST",
+    body: JSON.stringify(formData)
+  });
+  if (!resp.ok) {
+    const errorData = await resp.json() as ErrorDetail;
+    console.error(resp.statusText, errorData.detail);
+    return {
+      isError: true,
+      status: resp.status,
+      message: errorData.detail
+    };
+  }
+  const respData = await resp.json() as { message: string }
+  return respData;
+}

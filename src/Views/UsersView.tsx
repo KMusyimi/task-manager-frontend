@@ -26,21 +26,16 @@ export interface IsMenuType {
   settings: boolean;
 }
 
-export interface ProfileCtxTypes {
-  moveOverlayForward: () => void
-  moveOverlayBack: () => void
-}
 
 interface credsTypes {
   user: UserResponse;
   isMainMenu: boolean;
   search: string;
-  moveOverlayForward: () => void
   displayImgView?: (e: React.MouseEvent) => void;
 }
 
 
-const ProfileContent = memo(({ isMainMenu, search, moveOverlayForward, user }: credsTypes) => {
+const ProfileContent = memo(({ isMainMenu, search, user }: credsTypes) => {
   const [isViewImg, setIsViewImg] = useState(false);
 
   const closeImgView = useCallback(() => {
@@ -59,10 +54,9 @@ const ProfileContent = memo(({ isMainMenu, search, moveOverlayForward, user }: c
         {!isMainMenu &&
           <div className="link-wrapper"
             onClick={(e) => { e.stopPropagation() }}>
-            <Link
-              to={{ pathname: 'upload', search: search ? `?${search}` : '' }}
-              onClick={moveOverlayForward}
-              className="edit-profile--link">
+            <Link className="edit-profile--link"
+              to={{ pathname: 'upload', search: search ? `?${search}&z-i=500` : '' }}
+            >
               <IconWrapper className="edit-icon" name='FaPenToSquare' />
             </Link>
           </div>}
@@ -84,26 +78,21 @@ function UsersView() {
   const data = useRouteLoaderData<typeof userProfileLoader>('project-root');
   const user = data?.user;
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
   // 1 for forward, -1 for back
   const [direction, setDirection] = useState(1);
 
-  const [overlayZIndex, setOverlayZIndex] = useState(-1);
 
-  const { activeMenu, search } = useMemo(() => (
+  const { zIndex, activeMenu, search } = useMemo(() => (
     {
+      zIndex: (searchParams.get('z-i') ?? 300) as number,
       activeMenu: (searchParams.get('u-m') ?? 'mainMenu') as MenuTypes,
       search: searchParams.toString()
-    }),
-    [searchParams]);
-
-  const moveOverlayForward = useCallback(() => { setOverlayZIndex(1); }, []);
-  const moveOverlayBack = useCallback(() => { setOverlayZIndex(-1); }, []);
-
+    }), [searchParams]);
 
   const navigateTo = useCallback((menu: MenuTypes) => {
     // u-m stands for user menu
+    setDirection(1);
     startTransition(() => {
       setSearchParams((prev) => {
         const nextParams = new URLSearchParams(prev);
@@ -111,19 +100,19 @@ function UsersView() {
         return nextParams;
       });
     })
-    setDirection(1);
   }, [setSearchParams])
 
 
   const goBack = useCallback(() => {
+    setDirection(-1);
     startTransition(() => {
       setSearchParams((prev) => {
         const nextParams = new URLSearchParams(prev);
         nextParams.delete('u-m');
         return nextParams;
       });
-    })
-    setDirection(-1);
+    }
+    )
   }, [setSearchParams]);
 
   const isMenu: IsMenuType = useMemo(() => {
@@ -160,12 +149,11 @@ function UsersView() {
               <ProfileContent
                 user={user}
                 isMainMenu={isMenu.isMain}
-                search={search}
-                moveOverlayForward={moveOverlayForward} />
+                search={search} />
             </PanelWrapper>
           </div>
-
-          <AnimatePresence mode="wait" custom={direction}>
+          
+          <AnimatePresence mode='wait' custom={direction}>
             <motion.div
               key={activeMenu} // Key triggers the exit/entry
               custom={direction}
@@ -174,14 +162,14 @@ function UsersView() {
               exit={{ x: direction > 0 ? '-100%' : '100%', opacity: 0 }}
               transition={{ duration: 0.25, ease: "easeInOut" }}
               layout // Smoothly handles height changes between menus
+              style={{ filter: isPending ? 'blur(1px)' : 'none', opacity: isPending ? 0.8 : 1 }}
               className="menu-wrapper">
               {isMenu.isMain ?
                 <MainProfileMenu
                   isActive={isMenu.isMain}
-                  moveOverlayForward={moveOverlayForward}
+                  search={search}
                   navigateTo={navigateTo} />
                 :
-
                 <SubMenu activeMenu={activeMenu} user={user} />
               }
             </motion.div>
@@ -190,8 +178,8 @@ function UsersView() {
       </div >
       <Overlay
         isActive={true}
-        zIndex={overlayZIndex < 0 ? 300 : 500}>
-        <Outlet context={{ moveOverlayForward, moveOverlayBack } satisfies ProfileCtxTypes} />
+        zIndex={zIndex}>
+        <Outlet />
       </Overlay>
     </>)
 

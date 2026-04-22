@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 
-import IconWrapper from "../general/IconWrapper";
+import { FaEye, FaEyeSlash } from 'react-icons/fa6'
 
 interface inputProps {
   id?: string;
@@ -13,7 +13,7 @@ interface inputProps {
   onBlur?: (e: React.FormEvent<HTMLInputElement>) => void;
 }
 
-export default function PasswordInputWrapper({ passwordData, ...rest }: inputProps) {
+function PasswordInputWrapper({ passwordData, ...rest }: inputProps) {
   const [hidePassword, setHidePassword] = useState(true);
   const InputRef = useRef<HTMLInputElement>(null);
 
@@ -81,13 +81,18 @@ export default function PasswordInputWrapper({ passwordData, ...rest }: inputPro
         title="Password must be at least 8 characters long and include: 1 uppercase, 1 lowercase, 1 number, and 1 special character."
         minLength={8}
         value={passwordData}
-        required 
-        {...rest}/>
+        required
+        {...rest} />
       <button type="button"
         className="pwd-toggle--btn"
         onClick={togglePasswordField}>
-        <IconWrapper name={hidePassword ? 'FaEye' : 'FaEyeSlash'} />
+        <i className='icon'>
+          {hidePassword ? <FaEye/> : <FaEyeSlash/>}
+        </i>
+        
       </button>
     </div>
   )
 }
+
+export default memo(PasswordInputWrapper);

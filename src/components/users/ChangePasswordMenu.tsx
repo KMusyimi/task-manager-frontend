@@ -1,6 +1,6 @@
 import { memo, useCallback, useState, type CSSProperties } from "react";
 import { useFetcher } from "react-router-dom";
-import type { ChangePasswordParams, UserProfileTypes } from "../../models/UserModel";
+import type { ChangePasswordParams, UserResponse } from "../../models/UserModel";
 
 import PasswordInputWrapper from "./PasswordInputWrapper";
 
@@ -8,7 +8,7 @@ const styles: CSSProperties = { paddingBlockStart: '.75em', marginBottom: '1em' 
 
 
 interface ChangePasswordTypes {
-  user: Omit<UserProfileTypes, 'profileImgUrl'>
+  user: Omit<UserResponse, 'profileImgUrl'>
 }
 
 function ChangePasswordMenu({ user }: ChangePasswordTypes) {
@@ -20,9 +20,13 @@ function ChangePasswordMenu({ user }: ChangePasswordTypes) {
     'currentPw': '', 'newPw': '', 'confirmPw': '', intent: 'changePw'
   });
 
-  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
+  const handleOnSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  }, []);
+    fetcher.submit(e.currentTarget, { method: 'POST', encType: "multipart/form-data" })
+      .catch((error: unknown) => {
+        console.error("Error during changing password", error);
+      });
+  }, [fetcher]);
 
 
   const handleOnInput = useCallback((e: React.FormEvent<HTMLInputElement>) => {
@@ -33,7 +37,7 @@ function ChangePasswordMenu({ user }: ChangePasswordTypes) {
     setFormData(prev => ({ ...prev, [name]: value }));
   }, [validationErr])
 
-  const handleOnblur = useCallback((e: React.FormEvent<HTMLInputElement>) => {
+  const handleOnblur = useCallback((e: React.FormEvent<HTMLInputElement>, data: ChangePasswordParams) => {
     const { name, value } = e.currentTarget;
 
     const re = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^\w\s]).{8,}/
@@ -45,33 +49,33 @@ function ChangePasswordMenu({ user }: ChangePasswordTypes) {
 
 
     if (name === 'newPw' && value) {
-      if (formData.currentPw === value) {
+      if (data.currentPw === value) {
         setValidationErr("New password cannot be the same as your current password.")
 
       } else {
-        setIsNewPwValid(re.test(formData.newPw));
+        setIsNewPwValid(re.test(data.newPw));
       }
 
     }
 
     if (name === 'confirmPw' && value) {
-      if (formData.newPw !== value) {
+      if (data.newPw !== value) {
         setValidationErr('New and confirmation password do not match.')
         return;
       } else {
         setValidationErr("");
       }
     }
-  }, [formData.currentPw, formData.newPw]);
+  }, []);
 
   return (
     <fetcher.Form
       className={`change-pw--form menu-item`}
-      action={`/users/${user.username}/${user.userID.toString()}/change-password`}
+      action={'.'}
       method="put"
-      onSubmit={handleSubmit} >
-      <input type="text" name="username" 
-      autoComplete='username' readOnly defaultValue={user.username} style={{ display: 'none' }} />
+      onSubmit={handleOnSubmit} >
+      <input type="text" name="username"
+        autoComplete='username' readOnly defaultValue={user.username} style={{ display: 'none' }} />
       <input type="hidden" name="userID" defaultValue={user.userID} />
       <input type="hidden" name="intent" defaultValue={formData.intent} />
 
@@ -88,7 +92,7 @@ function ChangePasswordMenu({ user }: ChangePasswordTypes) {
         id="currentPw"
         name='currentPw'
         autoComplete='current-password'
-        onBlur={handleOnblur}
+        onBlur={(e) => { handleOnblur(e, formData) }}
         placeholder="Enter your current password"
         onInput={handleOnInput}
         passwordData={formData.currentPw} />
@@ -101,7 +105,7 @@ function ChangePasswordMenu({ user }: ChangePasswordTypes) {
         id="newPw"
         name='newPw'
         autoComplete='new-password'
-        onBlur={handleOnblur}
+        onBlur={(e) => { handleOnblur(e, formData) }}
         placeholder="Enter your new password"
         onInput={handleOnInput}
         passwordData={formData.newPw} />
@@ -115,7 +119,7 @@ function ChangePasswordMenu({ user }: ChangePasswordTypes) {
         autoComplete='new-password'
         placeholder="Confirm your new password"
         onInput={handleOnInput}
-        onBlur={handleOnblur}
+        onBlur={(e) => { handleOnblur(e, formData) }}
         disabled={!isNewPwValid}
         passwordData={formData.confirmPw} />
 

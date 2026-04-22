@@ -1,12 +1,11 @@
 import React, { CSSProperties, memo, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useFetcher, useOutletContext, useSearchParams } from "react-router-dom";
+import { Link, useFetcher, useSearchParams } from "react-router-dom";
 
 import IconWrapper from "../components/general/IconWrapper";
 import UploadImgPreview from "../components/general/UploadImgPreview";
 
 import { useFlashMessage } from "../hooks/ProviderHooks";
 import { formatFileSize, IconColors } from "../utils/utils";
-import { ProfileCtxTypes } from './UsersView';
 
 const errStyles: CSSProperties = { borderColor: '#e24749' }
 
@@ -41,7 +40,7 @@ const DropZone = memo(({ isDragActive, uploadErr, handleOnDrag, handleOnDrop, is
   const style: CSSProperties = useMemo(() => ({ "marginBottom": isPreviewUrl ? '1.85em' : '0' }), [isPreviewUrl]);
 
   const styles = uploadErr ? errStyles : style;
-  
+
   return (
     <div
       className={cls}
@@ -68,8 +67,6 @@ const DropZone = memo(({ isDragActive, uploadErr, handleOnDrag, handleOnDrop, is
 
 // TODO: break into small components
 function ProfileUpload() {
-  const { moveOverlayBack } = useOutletContext<ProfileCtxTypes>();
-
   const fetcher = useFetcher<ActionResponse>({ key: 'pr-key' });
   const actionData = fetcher.data;
   const InputRef = useRef<HTMLInputElement>(null);
@@ -77,7 +74,9 @@ function ProfileUpload() {
   const { showMessage } = useFlashMessage();
   const [searchParams,] = useSearchParams();
 
-  const search = useMemo(() => searchParams.toString(), [searchParams]);
+  const search = useMemo(() => {
+    searchParams.delete('z-i'); return searchParams.toString()
+  }, [searchParams]);
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -183,8 +182,7 @@ function ProfileUpload() {
   }, []);
   console.log(uploadState);
 
-  const handleOnSubmit = useCallback((e: React.FormEvent<HTMLFormElement>, data: uploadData) => {
-    e.preventDefault();
+  const handleOnSubmit = useCallback((data: uploadData) => {
 
     if (!data.file || !data.filename) {
       showMessage({ type: 'warning', text: 'No changes made' });
@@ -210,6 +208,8 @@ function ProfileUpload() {
   const isStatusErrorOrSuccess = uploadState.status === 'success' || uploadState.status === 'error';
   const alertSuccessTextCls = actionData?.error ? 'alert-text' : 'success-text';
 
+
+
   return (
     <div className="profile-upload--wrapper">
       <header>
@@ -219,8 +219,7 @@ function ProfileUpload() {
         </span>
         <Link
           to={{ pathname: fetcher.state === 'idle' ? '..' : 'javascript:void(0)', search: search ? `?${search}` : '' }}
-          relative="path"
-          onClick={moveOverlayBack}>
+          relative="path">
 
           <IconWrapper className="back-icon" name="FaRegCircleXmark" />
         </Link>
@@ -250,27 +249,23 @@ function ProfileUpload() {
           handleDeleteFile={handleDeleteFile}
           status={uploadState.status} />}
 
-        <fetcher.Form
-          method='post'
-          action="."
-          onSubmit={(e) => { handleOnSubmit(e, uploadState) }}>
-          <input
-            id="profile-upload"
-            ref={InputRef}
-            className="file-input"
-            type={"file"}
-            name="file"
-            accept={"image/png, image/jpeg, image/webp"}
-            onInput={handleOnInput}
-            hidden />
-          {previewUrl && (
-            <button
-              className="upload-btn"
-              type="submit"
-              disabled={uploadState.status !== 'selected'}>
-              {fetcher.state === 'submitting' ? 'Uploading...' : 'Upload Image'}
-            </button>)}
-        </fetcher.Form>
+        <input
+          id="profile-upload"
+          ref={InputRef}
+          className="file-input"
+          type={"file"}
+          name="file"
+          accept={"image/png, image/jpeg, image/webp"}
+          onInput={handleOnInput}
+          hidden />
+        {previewUrl && (
+          <button
+            className="upload-btn"
+            type="submit"
+            onClick={() => { handleOnSubmit(uploadState) }}
+            disabled={isStatusErrorOrSuccess}>
+            {fetcher.state === 'submitting' ? 'Uploading...' : 'Upload Image'}
+          </button>)}
       </main>
     </div>
   )

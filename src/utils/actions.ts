@@ -1,5 +1,5 @@
 import { type ActionFunctionArgs, redirect } from "react-router-dom";
-import { addProject, createAccount, deleteProject, duplicateProject, editUserProfile, loginUser, logout, updateProject, uploadProfileImage } from "../api";
+import { addProject, changePassword, createAccount, deleteProject, duplicateProject, editUserProfile, loginUser, logout, updateProject, uploadProfileImage } from "../api";
 import { requireAuth } from "./auth";
 import { processFormData } from "./utils";
 import type { ActionFuncError, FormParams } from "../models/entity";
@@ -135,6 +135,9 @@ export async function userProfileAction({ params, request }: ActionFunctionArgs)
       const { loginUsername: login_username, message } = response;
       return redirect(`/projects/${login_username}/profile?message=${message}`);
     }
+    case 'changePw': { 
+      const response = await changePassword(username, payload);
+      console.log('Change password action', response); return; }
     default: {
       return { error: 'Invalid submit intent', status: 400, timestamp: currentTimestamp } as ActionFuncError
     }

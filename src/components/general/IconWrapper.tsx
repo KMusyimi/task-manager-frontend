@@ -23,9 +23,7 @@ const iconsObj = {
   FaGear: createLazyIcon(() => import('react-icons/fa6'), 'FaGear'),
   FaAngleRight: createLazyIcon(() => import('react-icons/fa6'), 'FaAngleRight'),
   FaLock: createLazyIcon(() => import('react-icons/fa6'), 'FaLock'),
-  FaEyeSlash: createLazyIcon(() => import('react-icons/fa6'), 'FaEyeSlash'),
   FaRegCircleXmark: createLazyIcon(() => import('react-icons/fa6'), 'FaRegCircleXmark'),
-  FaEye: createLazyIcon(() => import('react-icons/fa6'), 'FaEye'),
   FaCloudArrowUp: createLazyIcon(() => import('react-icons/fa6'), 'FaCloudArrowUp'),
   FaTrash: createLazyIcon(() => import('react-icons/fa6'), 'FaTrash'),
 }
