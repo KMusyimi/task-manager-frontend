@@ -32,7 +32,7 @@ export default function RegistrationForm() {
     <Form className="auth-form" replace={true} method="post">
       <div className="input-wrapper">
         <label
-          className="label-block label-grey label-f14"
+          className="label-block label-grey label-f14 label-required"
           htmlFor="email">Email</label>
 
         <input
@@ -54,7 +54,7 @@ export default function RegistrationForm() {
       {/* TODO:  error field into a component */}
       <div className="input-wrapper">
         <label
-          className="label-block label-grey label-f14"
+          className="label-block label-grey label-f14 label-required"
           htmlFor={"password"}>{'Password'}</label>
         <PasswordInputWrapper
           id="password"
@@ -68,7 +68,7 @@ export default function RegistrationForm() {
 
       <div className="input-wrapper">
         <label htmlFor={"username"}
-          className="label-block label-grey label-f14">Username</label>
+          className="label-block label-grey label-f14 label-required">Username</label>
         <input
           id="username"
           name="username"

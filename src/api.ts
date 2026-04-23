@@ -1,12 +1,12 @@
 import type { TokenResponse } from "./models/AuthModel";
-import type { ErrorDetail, FormParams, ProjectResponseSuccess as ProjectSuccessResponse } from "./models/entity";
+import type { ErrorDetail, SubmitData, ProjectResponseSuccess  } from "./models/entity";
 import type { ProjectsResponse, UserResponse } from "./models/UserModel";
 import authHeader, { storeAccessToken } from "./utils/auth";
 
 export const API_URL = 'http://localhost:8000';
 
 
-export async function loginUser(creds: FormParams) {
+export async function loginUser(formData: SubmitData) {
 
   const resp = await fetch(`${API_URL}/auth/login`, {
     method: 'POST',
@@ -14,8 +14,8 @@ export async function loginUser(creds: FormParams) {
     credentials: 'include',
     body: new URLSearchParams({
       grant_type: 'password',
-      username: creds.username,
-      password: creds.password,
+      username: formData.username,
+      password: formData.password,
       client_id: '',
       client_secret: ''
     }).toString()
@@ -38,7 +38,7 @@ export async function loginUser(creds: FormParams) {
   return { message: respData.message, login_username: respData.username };
 
 }
-export async function createAccount(creds: FormParams) {
+export async function createAccount(formData: SubmitData) {
   const registerUrl = `${API_URL}/auth/register`;
 
   const headers = {
@@ -48,7 +48,7 @@ export async function createAccount(creds: FormParams) {
   const resp = await fetch(registerUrl, {
     method: "POST",
     headers,
-    body: JSON.stringify(creds)
+    body: JSON.stringify(formData)
   });
   if (!resp.ok || resp.status === 204) {
     const errorData = await resp.json() as ErrorDetail;
@@ -89,7 +89,7 @@ export async function logout() {
 }
 
 
-export async function addProject(username: string, project: FormParams) {
+export async function addProject(username: string, project: SubmitData) {
   const projectURL = `${API_URL}/projects/${username}/`;
   const headers = {
     ...authHeader(),
@@ -112,7 +112,7 @@ export async function addProject(username: string, project: FormParams) {
     };
   }
 
-  const data = await resp.json() as ProjectSuccessResponse;
+  const data = await resp.json() as ProjectResponseSuccess;
 
   return data;
 }
@@ -142,9 +142,9 @@ export async function getProjects(username: string) {
 }
 
 
-export async function updateProject(username: string, creds: FormParams) {
+export async function updateProject(username: string, formData: SubmitData) {
 
-  const projectURL = `${API_URL}/projects/${username}/${creds.projectID}`;
+  const projectURL = `${API_URL}/projects/${username}/${formData.projectID}`;
   const headers = {
     ...authHeader(),
     'Content-Type': 'application/json',
@@ -153,7 +153,7 @@ export async function updateProject(username: string, creds: FormParams) {
     method: "PUT",
     headers,
     credentials: 'include',
-    body: JSON.stringify(creds)
+    body: JSON.stringify(formData)
   });
 
   if (!resp.ok) {
@@ -166,7 +166,7 @@ export async function updateProject(username: string, creds: FormParams) {
     };
   }
 
-  const data = await resp.json() as ProjectSuccessResponse;
+  const data = await resp.json() as ProjectResponseSuccess;
   const { message, projectID } = data;
 
   return { projectID, message };
@@ -193,7 +193,7 @@ export async function duplicateProject(username: string, projectID: string) {
     };
   }
 
-  const data = await resp.json() as ProjectSuccessResponse;
+  const data = await resp.json() as ProjectResponseSuccess;
 
   return data;
 }
@@ -247,15 +247,16 @@ export async function UserProfile(username: string) {
 }
 
 
-export async function editUserProfile(username: string, creds: FormParams) {
+export async function editUserProfile(username: string, formData: SubmitData) {
   const url = `${API_URL}/users/${username}/edit-profile`;
+  console.log(formData);
   const headers = { ...authHeader(), 'Content-Type': 'application/json' };
 
   const resp = await fetch(url, {
     method: "PUT",
     headers,
     credentials: 'include',
-    body: JSON.stringify(creds)
+    body: JSON.stringify(formData)
 
   });
 
@@ -300,14 +301,15 @@ export async function uploadProfileImage(username: string, formData: FormData) {
   return respData;
 }
 
-export async function changePassword(username: string, formData: FormParams) {
+export async function changePassword(username: string, formData: SubmitData) {
   const url = `${API_URL}/users/${username}/change-password`;
-
-  const headers = { ...authHeader() };
+  console.log(formData);
+  const headers = { ...authHeader(), 'Content-Type': 'application/json' };
 
   const resp = await fetch(url, {
     headers,
     method: "POST",
+    credentials: 'include',
     body: JSON.stringify(formData)
   });
   if (!resp.ok) {

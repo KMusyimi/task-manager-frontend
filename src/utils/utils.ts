@@ -1,8 +1,6 @@
 import type { FormParams } from "../models/entity";
 
 
-
-
 export const IconColors = {
   idle: "#6b7280",      // Gray
   selected: "#3b82f6",  // Blue
@@ -46,8 +44,3 @@ export async function processFormData(request: Request): Promise<FormParams> {
   return payload;
 }
 
-export const formatFileSize = (bytes: number) => {
-  if (bytes < 1024) { return `${bytes.toFixed(1)} Bytes`; }
-  else if (bytes < 1048576) { return (bytes / 1024).toFixed(1) + " KB"; }
-  else { return (bytes / 1048576).toFixed(1) + " MB" };
-};

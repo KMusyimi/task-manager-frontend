@@ -1073,17 +1073,19 @@
   margin-bottom: 0;
 }
 
+ .change-pw--form .input-wrapper{
+  text-align: left;
+   margin-bottom: .75em;
 
-
-.change-pw--form .password-input--wrapper {
+ }
+ .change-pw--form .input-wrapper:last-of-type {
+   margin-bottom: 1.25em;
+ }
+.change-pw--form .input-wrapper .password-input--wrapper {
   background-color: var(--bg-input-focus);
   border-radius: 0.75em;
-  margin-bottom: .75em;
+  margin-bottom: .15em;
   overflow: hidden;
-}
-
-.change-pw--form .password-input--wrapper:last-of-type {
-  margin-bottom: 2em;
 }
 
 .change-pw--form .password-input--wrapper:has(input:invalid:not(:placeholder-shown)) {
@@ -1103,6 +1105,9 @@
   padding: 1.115em 1em;
 }
 
+.change-pw--form .input-wrapper .alert-text{
+  margin-left: .5em;
+}
 
 .change-pw--form .password-input--wrapper button {
   margin-right: .75em;

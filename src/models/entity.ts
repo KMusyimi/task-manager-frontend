@@ -23,6 +23,7 @@ export interface ActionFuncError {
 }
 
 export type FormParams = Record<string, string>;
+export type SubmitData = Omit<FormParams, 'intent'>;
 
 export interface UserValidationFields {
   email: boolean | null;
@@ -57,6 +58,6 @@ export interface ContextMenuPosition {
   left: string | number;
 }
 
-export interface ErrorResponse{
+// export interface ErrorResponse{
   
-}
+// }

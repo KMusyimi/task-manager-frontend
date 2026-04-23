@@ -123,6 +123,10 @@ export async function userProfileAction({ params, request }: ActionFunctionArgs)
     return { error: 'Username is missing', status: 401 };
   }
   await requireAuth(request);
+  const url = new URL(request.url);
+  const searchParams = url.searchParams;
+  console.log(searchParams, request.url)
+
   const payload = await processFormData(request);
 
   switch (payload.intent) {
@@ -136,7 +140,12 @@ export async function userProfileAction({ params, request }: ActionFunctionArgs)
       return redirect(`/projects/${login_username}/profile?message=${message}`);
     }
     case 'changePw': { 
+      console.log(payload)
       const response = await changePassword(username, payload);
+      if ('isError' in response) {
+        console.error('userProfileAction edit-profile errors ->', response.message)
+        return { error: response.message, status: response.status, timestamp: currentTimestamp } as ActionFuncError
+      }
       console.log('Change password action', response); return; }
     default: {
       return { error: 'Invalid submit intent', status: 400, timestamp: currentTimestamp } as ActionFuncError

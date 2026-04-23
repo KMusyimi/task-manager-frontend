@@ -48,7 +48,7 @@ export default function LoginForm() {
     <Form className="auth-form" method="post" replace={true}>
       <div className="input-wrapper">
 
-        <label className="label-block label-grey label-f14" htmlFor="username">Enter username or email</label>
+        <label className="label-block label-grey label-f14 label-required" htmlFor="username">Enter username or email</label>
 
         <input
           id={'username'}
@@ -70,7 +70,7 @@ export default function LoginForm() {
 
       <div className="input-wrapper">
         <label
-          className="label-block label-grey label-f14"
+          className="label-block label-grey label-f14 label-required"
           htmlFor={"password"}>Password</label>
 
         <PasswordInputWrapper

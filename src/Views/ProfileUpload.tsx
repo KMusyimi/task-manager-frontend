@@ -5,7 +5,7 @@ import IconWrapper from "../components/general/IconWrapper";
 import UploadImgPreview from "../components/general/UploadImgPreview";
 
 import { useFlashMessage } from "../hooks/ProviderHooks";
-import { formatFileSize, IconColors } from "../utils/utils";
+import {IconColors } from "../utils/utils";
 
 const errStyles: CSSProperties = { borderColor: '#e24749' }
 
@@ -34,6 +34,14 @@ interface DropZoneParams {
   handleOnDrag: (e: React.DragEvent<HTMLDivElement>) => void;
   handleOnDrop: (e: React.DragEvent<HTMLDivElement>) => void;
 }
+
+const formatFileSize = (bytes: number) => {
+  if (bytes < 1024) { return `${bytes.toFixed(1)} Bytes`; }
+  else if (bytes < 1048576) { return (bytes / 1024).toFixed(1) + " KB"; }
+  else { return (bytes / 1048576).toFixed(1) + " MB" };
+};
+
+
 
 const DropZone = memo(({ isDragActive, uploadErr, handleOnDrag, handleOnDrop, isPreviewUrl, children }: DropZoneParams) => {
   const cls = isDragActive ? "drop-zone active" : "drop-zone";
