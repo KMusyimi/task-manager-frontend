@@ -5,7 +5,7 @@ import type { projectsLoader } from "../utils/loaders";
 
 import { ProjectContextType } from "../components/projects/ProjectsLayout";
 import DashboardSkeleton from "../components/skeleton/DashboardSkeleton";
-import useDeleteModal, { useContextMenu, useSidebar } from "../hooks/ProviderHooks";
+import useDeleteModal, { useContextMenu } from "../hooks/ProviderHooks";
 
 
 import Overlay from "../components/general/Overlay";
@@ -20,11 +20,11 @@ const DeleteModal = lazy(() => import("../components/modals/DeleteModal"));
 
 function DashboardView() {
   const { projectsResp } = useLoaderData<typeof projectsLoader>();
-  const { isMobile } = useOutletContext<ProjectContextType>();
+  const { isMobile, closeSidebar, isSidebarOpen } = useOutletContext<ProjectContextType>();
 
   const { openModal } = useDeleteModal();
-  const { closeSidebar, isSidebarOpen } = useSidebar();
-  const { isMenuOpen: isOpen, closeMenu } = useContextMenu();
+
+  const { isMenuOpen, closeMenu } = useContextMenu();
 
   const [openForm, setOpenForm] = useState(false);
 
@@ -32,7 +32,7 @@ function DashboardView() {
   const openEditForm = useCallback(() => { setOpenForm(true) }, []);
   const closeEditForm = useCallback(() => { setOpenForm(false) }, []);
 
-  const isMenuOrFormOrModalOpen = isOpen || openForm || openModal;
+  const isMenuOrFormOrModalOpen = isMenuOpen || openForm || openModal;
   const isMobileSidebarOpen = isMobile && isSidebarOpen;
 
   return (
@@ -40,7 +40,7 @@ function DashboardView() {
       <Suspense fallback={<DashboardSkeleton />}>
         <Dashboard dataPromise={projectsResp} />
       </Suspense>
-      
+
       <Outlet />
 
       {isMenuOrFormOrModalOpen ? (
@@ -50,7 +50,7 @@ function DashboardView() {
           closeOverlay={openForm ? closeEditForm : closeMenu}>
           <Suspense fallback={<Spinner />}>
             {openModal && <DeleteModal />}
-            {isOpen && <ProjectContextMenu
+            {isMenuOpen && <ProjectContextMenu
               openEditForm={openEditForm} />}
             {openForm && <EditProjectForm
               closeEditForm={closeEditForm} />}

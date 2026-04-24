@@ -44,7 +44,7 @@ export async function requireAuth(request: Request) {
       message: loginMessage,
       redirect: pathname
     });
-    throw redirect(`/login?${params.toString()}`);
+    throw redirect(`/auth/login?${params.toString()}`);
   }
   // checking if the token is still valid or has expired 
   try {
@@ -67,7 +67,7 @@ export async function requireAuth(request: Request) {
     localStorage.removeItem('token');
     if (err instanceof Response) throw err;
     console.error("Network or unexpected error", err);
-    throw redirect("/login");
+    throw redirect("/auth/login");
   }
 
   return null;
@@ -108,7 +108,7 @@ async function refreshUserToken(pathname: string) {
       redirect: pathname
     });
 
-    throw redirect(`/login?${params.toString()}`);
+    throw redirect(`/auth/login?${params.toString()}`);
   }
 
   return null;

@@ -6,7 +6,6 @@ import type { AsideProjects } from "../../models/ProjectsModel";
 import IconWrapper from "../general/IconWrapper";
 import AddProjectForm from "./AddProjectForm";
 
-import { useSidebar } from "../../hooks/ProviderHooks";
 import LogoImg from "../general/LogoImg";
 
 import { ProjectContextType } from "./ProjectsLayout";
@@ -111,8 +110,7 @@ const ProjectNav = memo(({ count, children }: { count: number, children: ReactNo
 
 
 function ProjectsSideBar({ projects }: SideBarParamsType) {
-  const { isMobile } = useOutletContext<ProjectContextType>();
-  const { closeSidebar, isSidebarOpen } = useSidebar();
+  const { isMobile, closeSidebar, isSidebarOpen } = useOutletContext<ProjectContextType>();
 
   const projectsLength = projects.length;
 

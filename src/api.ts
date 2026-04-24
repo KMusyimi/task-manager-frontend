@@ -249,7 +249,7 @@ export async function UserProfile(username: string) {
 
 export async function editUserProfile(username: string, formData: SubmitData) {
   const url = `${API_URL}/users/${username}/edit-profile`;
-  console.log(formData);
+  
   const headers = { ...authHeader(), 'Content-Type': 'application/json' };
 
   const resp = await fetch(url, {

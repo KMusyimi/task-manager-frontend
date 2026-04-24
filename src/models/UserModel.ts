@@ -33,6 +33,6 @@ export interface ProjectsResponse {
 
 
 export type EditUserParams = Omit<UserResponse, 'profileImgUrl'> & {
-  intent: 'edit-profile';
+  intent: 'edit';
   password: string;
 };

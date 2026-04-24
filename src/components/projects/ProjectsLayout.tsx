@@ -1,11 +1,9 @@
-import { memo, ReactNode, Suspense, useCallback, useMemo, useRef } from "react";
+import { memo, ReactNode, Suspense, useCallback, useMemo, useRef, useState } from "react";
 import { Link, Outlet, useLoaderData, useSearchParams } from "react-router-dom";
-import SidebarProvider from "../providers/SidebarProvider";
 import { useToastMessage } from "../../hooks/MessageHandlerHook";
 import DeleteModalProvider from "../providers/DeleteModalProvider";
 import LogoImg from "../general/LogoImg";
 import { useMediaQuery } from "../../hooks/CustomHooks";
-import { useSidebar } from "../../hooks/ProviderHooks";
 import { userProfileLoader } from "../../utils/loaders";
 import ProfileImg from "../general/ProfileImg";
 import { ContextMenuProvider } from "../providers/ContextMenuProvider";
@@ -18,17 +16,19 @@ const LoadProfile = () => import("../../Views/UsersView");
 
 export interface ProjectContextType {
   username: string;
+  isSidebarOpen: boolean;
   isMobile: boolean;
+  closeSidebar: () => void;
 }
 
-type HeaderParams = Omit<ProjectContextType, 'username'> & {
+type HeaderParams = Omit<ProjectContextType, 'username' | 'isSidebarOpen' | 'closeSidebar'> & {
   children: ReactNode;
+  openSidebar: () => void;
 }
 
 
 
-const HeaderContents = memo(({ children, isMobile }: HeaderParams) => {
-  const { openSidebar } = useSidebar();
+const HeaderContents = memo(({ children, openSidebar, isMobile }: HeaderParams) => {
   return (
     <>
       {children}
@@ -50,6 +50,11 @@ function ProjectLayout() {
   const [searchParams,] = useSearchParams();
   const search = useMemo(() => searchParams.toString(), [searchParams]);
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const openSidebar = useCallback(() => { setIsSidebarOpen(true) }, []);
+  const closeSidebar = useCallback(() => { setIsSidebarOpen(false) }, []);
+
   const { user } = useLoaderData<typeof userProfileLoader>();
   const isMobile = useMediaQuery();
 
@@ -63,30 +68,34 @@ function ProjectLayout() {
     }
   }, []);
 
+  const memorizedData = useMemo(() => ({
+    isSidebarOpen, isMobile, closeSidebar, username: user.username
+  }), [closeSidebar, isMobile, isSidebarOpen, user.username]);
+
   return (
     <div className="container">
-      <SidebarProvider>
-        <header className="main--header">
-          <HeaderContents isMobile={isMobile}>
-            <Suspense fallback={<Skeleton type="box" width={50} height={50} />}>
-              <Link className="profile-link"
-                to={{ pathname: `${user.username}/profile`, search: search ? `?${search}` : '' }}
-                onMouseEnter={onMouseEnter} >
-                <ProfileImg imgUrl={user.profileImgUrl} />
-              </Link>
-            </Suspense>
-          </HeaderContents>
-        </header>
+      <header className="main--header">
+        <HeaderContents
+          isMobile={isMobile}
+          openSidebar={openSidebar}>
+          <Suspense fallback={<Skeleton type="box" width={50} height={50} />}>
+            <Link className="profile-link"
+              to={{ pathname: `${user.username}/profile`, search: search ? `?${search}` : '' }}
+              onMouseEnter={onMouseEnter} >
+              <ProfileImg imgUrl={user.profileImgUrl} />
+            </Link>
+          </Suspense>
+        </HeaderContents>
+      </header>
 
-        <main className="main">
-          <ContextMenuProvider>
-            <DeleteModalProvider>
-              <Outlet
-                context={{ username: user.username, isMobile } satisfies ProjectContextType} />
-            </DeleteModalProvider>
-          </ContextMenuProvider>
-        </main>
-      </SidebarProvider>
+      <main className="main">
+        <ContextMenuProvider>
+          <DeleteModalProvider>
+            <Outlet
+              context={memorizedData satisfies ProjectContextType} />
+          </DeleteModalProvider>
+        </ContextMenuProvider>
+      </main>
 
       {/* TODO: add a footer */}
     </div >)

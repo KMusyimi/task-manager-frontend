@@ -6,7 +6,7 @@ import PasswordInputWrapper from "./PasswordInputWrapper";
 
 
 export default function LoginForm() {
-  const [formData, setFormData] = useState<LoginParams>({ 'username': '', 'password': '' });
+  const [formData, setFormData] = useState<LoginParams>({ username: '', password: '' });
   const navigation = useNavigation();
   const [isEmail, setIsEmail] = useState(false);
   const status = navigation.state;
@@ -30,8 +30,13 @@ export default function LoginForm() {
   const handleOnInput = useCallback((e: React.FormEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget as HTMLInputElement;
     if (name === 'username') {
-      const re = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
-      setIsEmail(re.test(value));
+      const lowerValue = value.toLocaleLowerCase();
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      
+      setIsEmail(emailRegex.test(lowerValue));
+      
+      setFormData(prev => ({ ...prev, [name]: lowerValue }));
+      return;
     }
     setFormData(prev => ({ ...prev, [name]: value }));
   }, []);

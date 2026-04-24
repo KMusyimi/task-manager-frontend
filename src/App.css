@@ -318,18 +318,23 @@
 }
 
 
-.auth-container .bgi-img-wrapper .logo {
+.auth-container .bgi-img-wrapper .logo-wrapper {
   position: absolute;
+  display: flex;
+  gap: .45em;
   top: 1.5em;
   left: 1.5em;
   z-index: 100;
 }
-
-.auth-container .bg--form {
+.auth-container .bgi-img-wrapper .logo-wrapper,
+.auth-container .bg--form{
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  
+}
+.auth-container .bg--form {
+  flex-direction: column;
   gap: .5em;
   position: relative;
   padding-inline: 1.6em;
@@ -388,11 +393,11 @@
 }
 
 
-.auth-container--register .btn-wrapper {
+.auth-container .register-form--container .btn-wrapper {
   text-align: right;
 }
 
-.auth-container--login .btn-wrapper {
+.auth-container .login-form--container .btn-wrapper {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
   grid-template-rows: 1fr;
@@ -400,7 +405,7 @@
   justify-content: space-between;
 }
 
-.auth-container--login .btn-wrapper a {
+.auth-container .login-form--container .btn-wrapper a {
   justify-self: left;
 }
 
@@ -555,6 +560,7 @@
   background-color: var(--bg-color-primary);
   padding: 1em .75em;
   border-radius: .75em;
+  min-height: 115px;
 }
 
 .user-profile--container .menu-panel--top,
@@ -1783,10 +1789,6 @@
     margin-bottom: 1.35em;
   }
 
-  /* .auth-container .bgi-img-wrapper {
-    max-height: 100dvh;
-  } */
-
   .auth-container .bgc--form {
     display: flex;
     height: 100dvh;
@@ -1807,8 +1809,8 @@
   }
 
 
-  .auth-container--login .password-input--wrapper,
-  .auth-container--register form>.input-txt:last-of-type {
+  .auth-container .login-form--container .password-input--wrapper,
+  .auth-container .register-form--container form>.input-txt:last-of-type {
     margin-bottom: 2.5em;
   }
 

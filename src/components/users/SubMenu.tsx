@@ -43,9 +43,11 @@ function Submenu({ activeMenu, user }: SubmenuParams) {
           exit={{ opacity: 0, x: 20 }}
           transition={{ duration: 0.2 }}
         >
-          <Suspense fallback={<Spinner />}>
-            {renderContent ? renderContent(user) : null}
-          </Suspense>
+          <div className='menu-item'>
+            <Suspense fallback={<Spinner />}>
+              {renderContent ? renderContent(user) : null}
+            </Suspense>
+          </div>
         </motion.div>
       }
     </>

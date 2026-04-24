@@ -20,7 +20,7 @@ function UserSettingsMenu() {
   }, []);
 
   return (<>
-    <ul className={`settings-list menu-item`}>
+    <ul className={`settings-list`}>
       <li className={"settings-items"}>
         <span>Theme</span>
 

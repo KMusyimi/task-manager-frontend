@@ -94,7 +94,7 @@ function ChangePasswordMenu({ user }: ChangePasswordTypes) {
 
   return (
     <fetcher.Form
-      className={`change-pw--form menu-item`}
+      className={`change-pw--form`}
       action={`.?${search}`}
       method="post">
       <input type="text" name="username"

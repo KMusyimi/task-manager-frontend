@@ -46,6 +46,27 @@ const projectActionObj = {
   }
 }
 
+const userActionObj = {
+  edit: async ({ username, payload, search }: { username: string, payload: FormParams, search?: string }) => {
+    const response = await editUserProfile(username, payload);
+    if ('isError' in response) {
+      console.error('userProfileAction edit-profile errors ->', response.message)
+      return { error: response.message, status: response.status, timestamp: currentTimestamp } as ActionFuncError
+    }
+    const { loginUsername: login_username, message } = response;
+    return redirect(`/projects/${login_username}/profile?message=${message}&${search ?? ''}`);
+  },
+  
+  changePw: async ({ username, payload }: { username: string, payload: FormParams }) => {
+    const response = await changePassword(username, payload);
+    if ('isError' in response) {
+      console.error('userProfileAction edit-profile errors ->', response.message)
+      return { error: response.message, status: response.status, timestamp: currentTimestamp } as ActionFuncError
+    }
+    localStorage.removeItem('token');
+    return redirect(`/auth/login/?message=${response.message}`);
+  }
+}
 
 
 export async function signupAction({ request }: ActionFunctionArgs) {
@@ -59,7 +80,7 @@ export async function signupAction({ request }: ActionFunctionArgs) {
       timestamp: currentTimestamp
     }
   }
-  return redirect(`/login?message=${response.message}`);
+  return redirect(`/auth/login?message=${response.message}`);
 }
 
 
@@ -99,7 +120,7 @@ export async function logoutAction() {
   }
 
   localStorage.removeItem('token');
-  return redirect(`/login/?message=${response.message}`);
+  return redirect(`/auth/login/?message=${response.message}`);
 }
 
 
@@ -117,42 +138,23 @@ export async function projectAction({ params, request }: ActionFunctionArgs) {
 
 
 export async function userProfileAction({ params, request }: ActionFunctionArgs) {
-
   const { username } = params;
   if (!username) {
     return { error: 'Username is missing', status: 401 };
   }
   await requireAuth(request);
-  const url = new URL(request.url);
-  const searchParams = url.searchParams;
-  console.log(searchParams, request.url)
-
+  
   const payload = await processFormData(request);
+  const url = new URL(request.url);
+  
+  const searchParams = url.searchParams;
+  const search = searchParams.toString();
 
-  switch (payload.intent) {
-    case 'edit-profile': {
-      const response = await editUserProfile(username, payload);
-      if ('isError' in response) {
-        console.error('userProfileAction edit-profile errors ->', response.message)
-        return { error: response.message, status: response.status, timestamp: currentTimestamp } as ActionFuncError
-      }
-      const { loginUsername: login_username, message } = response;
-      return redirect(`/projects/${login_username}/profile?message=${message}`);
-    }
-    case 'changePw': { 
-      console.log(payload)
-      const response = await changePassword(username, payload);
-      if ('isError' in response) {
-        console.error('userProfileAction edit-profile errors ->', response.message)
-        return { error: response.message, status: response.status, timestamp: currentTimestamp } as ActionFuncError
-      }
-      console.log('Change password action', response); return; }
-    default: {
-      return { error: 'Invalid submit intent', status: 400, timestamp: currentTimestamp } as ActionFuncError
-    }
-  }
-
+  const key = payload.intent as keyof typeof userActionObj;
+  return await userActionObj[key]({username, payload, search});
 }
+
+
 // TODO: add timestamp
 export async function profileUploadAction({ params, request }: ActionFunctionArgs) {
   const { username } = params;

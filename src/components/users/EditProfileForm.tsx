@@ -22,7 +22,7 @@ function EditProfileForm({ user }: MyProfileParams) {
   useActionError(fetcher.data as ActionFuncError);
 
   const [formData, setFormData] = useState<EditUserParams>(() => (
-    { ...user, 'intent': 'edit-profile', password: '' }));
+    { ...user, 'intent': 'edit', password: '' }));
 
   const handleOnInput = useCallback((e: React.FormEvent<HTMLInputElement>) => {
     const { name, value } = e.target as HTMLInputElement;
@@ -73,7 +73,7 @@ function EditProfileForm({ user }: MyProfileParams) {
   return (
     <>
       <Form
-        className={`edit-profile--form menu-item`}
+        className={`edit-profile--form`}
         action={'.'}
         method="put"
         replace={true}

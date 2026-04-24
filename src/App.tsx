@@ -8,6 +8,7 @@ import UsersView from './Views/UsersView';
 import ProjectLayout from './components/projects/ProjectsLayout';
 import { loginAction, logoutAction, profileUploadAction, projectAction, signupAction, userProfileAction } from './utils/actions';
 import { projectsLoader, projectsRedirectLoader, userProfileLoader } from './utils/loaders';
+import AuthLayout from './components/users/AuthLayout';
 
 const ProfileUpload = lazy(() => import('./Views/ProfileUpload'));
 const Logout = lazy(() => import('./Views/Logout'));
@@ -54,18 +55,20 @@ const router = createBrowserRouter(createRoutesFromElements(
       </Route>
 
     </Route>
-
     <Route
-      path={'login'}
-      element={<Login />}
-      errorElement={<Error />}
-      action={loginAction} />
+      path='auth'
+      element={<AuthLayout />}
+      errorElement={<Error />}>
+      <Route
+        path={'login'}
+        element={<Login />}
+        action={loginAction} />
 
-    <Route
-      path='signup'
-      element={<Register />}
-      action={signupAction}
-      errorElement={<Error />} />
+      <Route
+        path='signup'
+        element={<Register />}
+        action={signupAction} />
+    </Route>
 
     <Route path='*' element={<NotFound />} />
   </Route>))

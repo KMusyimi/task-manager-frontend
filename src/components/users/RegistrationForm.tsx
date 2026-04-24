@@ -10,7 +10,7 @@ export default function RegistrationForm() {
   const navigation = useNavigation();
   const status = navigation.state;
 
-  const [formData, setFormData] = useState<CreateUserParams>({ 'email': '', 'username': '', 'password': '' });
+  const [formData, setFormData] = useState<CreateUserParams>({ email: '', username: '', password: '' });
 
   const handleOnBlur = useCallback((e: React.FormEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget as HTMLInputElement;
@@ -83,7 +83,7 @@ export default function RegistrationForm() {
           pattern={"[A-Za-z0-9_\\-]{5,20}"}
           title="5-20 characters. Letters, numbers, underscores, and hyphens only. No spaces allowed."
           onKeyDown={handleOnKeyDown}
-          placeholder={"E.g., John Doe"}
+          placeholder={"E.g., john_doe"}
           required />
       </div>
 
