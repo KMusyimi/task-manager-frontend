@@ -1,4 +1,4 @@
-import { memo, type FormEvent } from "react";
+import { memo } from "react";
 import { useFetcher } from "react-router-dom";
 import useActionError from "../../hooks/ActionErrorHook";
 import type { ActionFuncError } from "../../models/entity";
@@ -7,7 +7,7 @@ import type { ActionFuncError } from "../../models/entity";
 interface DuplicateFormTypes {
   inputName: 'projectID' | 'taskID' | 'subTaskID';
   formPayloadID: string
-  handleOnSubmit: (e: FormEvent<HTMLFormElement>) => void
+  handleOnSubmit: (e: React.SubmitEvent<HTMLFormElement>) => void
 }
 
 function DuplicateForm({ inputName, formPayloadID, handleOnSubmit }: DuplicateFormTypes) {

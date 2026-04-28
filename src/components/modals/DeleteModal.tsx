@@ -1,4 +1,4 @@
-import { useCallback, type FormEvent } from "react";
+import { useCallback } from "react";
 import { useFetcher } from "react-router-dom";
 import useDeleteModal from "../../hooks/ProviderHooks";
 import type { ActionFuncError } from "../../models/entity";
@@ -16,7 +16,7 @@ export default function DeleteModal() {
   useActionError(fetcher.data as ActionFuncError);
 
 
-  const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback((e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     fetcher

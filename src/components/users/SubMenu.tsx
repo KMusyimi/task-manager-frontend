@@ -29,7 +29,7 @@ const MENU_COMPONENTS: ComponentsTypes = {
 
 
 function Submenu({ activeMenu, user }: SubmenuParams) {
-  const renderContent = MENU_COMPONENTS[activeMenu as keyof typeof MENU_COMPONENTS];
+  const renderContent = MENU_COMPONENTS[activeMenu];
   const isVisible = activeMenu !== 'mainMenu';
 
   return (

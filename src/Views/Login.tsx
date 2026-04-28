@@ -4,7 +4,6 @@ import { useActionData } from "react-router-dom";
 import { AuthFormSkeleton } from "../components/users/AuthLayout";
 import useActionError from "../hooks/ActionErrorHook";
 import { useToastMessage } from "../hooks/MessageHandlerHook";
-import type { ActionFuncError } from "../models/entity";
 import type { loginAction } from "../utils/actions";
 
 const LoginForm = lazy(() => import("../components/users/LoginForm"));
@@ -13,7 +12,7 @@ const LoginForm = lazy(() => import("../components/users/LoginForm"));
 function Login(): JSX.Element {
   const errData = useActionData<typeof loginAction>();
   useToastMessage();
-  useActionError(errData as ActionFuncError);
+  useActionError(errData);
 
 
   return (

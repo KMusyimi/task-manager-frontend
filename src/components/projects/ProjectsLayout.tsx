@@ -1,13 +1,13 @@
-import { memo, ReactNode, Suspense, useCallback, useMemo, useRef, useState } from "react";
+import { CSSProperties, memo, ReactNode, useCallback, useMemo, useRef, useState } from "react";
 import { Link, Outlet, useLoaderData, useSearchParams } from "react-router-dom";
 import { useToastMessage } from "../../hooks/MessageHandlerHook";
-import DeleteModalProvider from "../providers/DeleteModalProvider";
-import LogoImg from "../general/LogoImg";
-import { useMediaQuery } from "../../hooks/CustomHooks";
+import { useMediaQuery } from "../../hooks/ViewPortHooks";
 import { userProfileLoader } from "../../utils/loaders";
+import LogoImg from "../general/LogoImg";
 import ProfileImg from "../general/ProfileImg";
 import { ContextMenuProvider } from "../providers/ContextMenuProvider";
-import Skeleton from "../skeleton/Skeleton";
+import DeleteModalProvider from "../providers/DeleteModalProvider";
+
 
 import IconWrapper from "../general/IconWrapper";
 
@@ -21,24 +21,13 @@ export interface ProjectContextType {
   closeSidebar: () => void;
 }
 
-type HeaderParams = Omit<ProjectContextType, 'username' | 'isSidebarOpen' | 'closeSidebar'> & {
-  children: ReactNode;
-  openSidebar: () => void;
-}
+const h1Styles: CSSProperties = { fontFamily: '"Inter", "Inter-Fallback", system-ui, Avenir, Helvetica, sans-serif' }
 
-
-
-const HeaderContents = memo(({ children, openSidebar, isMobile }: HeaderParams) => {
+const HeaderContents = memo(({ children }: { children: ReactNode }) => {
   return (
     <>
       {children}
-      {isMobile &&
-        <button type="button"
-          className="menu-btn mobile-only"
-          onClick={openSidebar}>
-          <IconWrapper name='FaBarsStaggered' className="menu-icon" />
-        </button>}
-      <h1 className="desktop-only">Your Tasks</h1>
+      <h1 className="desktop-only" style={h1Styles}>Your Tasks</h1>
       <LogoImg />
     </>
   )
@@ -75,16 +64,18 @@ function ProjectLayout() {
   return (
     <div className="container">
       <header className="main--header">
-        <HeaderContents
-          isMobile={isMobile}
-          openSidebar={openSidebar}>
-          <Suspense fallback={<Skeleton type="box" width={50} height={50} />}>
-            <Link className="profile-link"
-              to={{ pathname: `${user.username}/profile`, search: search ? `?${search}` : '' }}
-              onMouseEnter={onMouseEnter} >
-              <ProfileImg imgUrl={user.profileImgUrl} />
-            </Link>
-          </Suspense>
+        <HeaderContents>
+          <Link className="profile-link"
+            to={{ pathname: `${user.username}/profile`, search: search ? `?${search}` : '' }}
+            onMouseEnter={onMouseEnter} >
+            <ProfileImg imgUrl={user.profileImgUrl} />
+          </Link>
+          {isMobile &&
+            <button type="button"
+              className="menu-btn mobile-only"
+              onClick={openSidebar}>
+              <IconWrapper name='FaBarsStaggered' className="menu-icon" />
+            </button>}
         </HeaderContents>
       </header>
 

@@ -40,12 +40,12 @@ export function projectsRedirectLoader() {
       return redirect(decoded.sub);
     }
     // eslint-disable-next-line @typescript-eslint/only-throw-error
-    else throw redirect('/login');
+    else throw redirect('/auth/login');
 
   } catch (e: unknown) {
     console.error('Error when accessing token', e);
     // eslint-disable-next-line @typescript-eslint/only-throw-error
-    throw redirect('/login');
+    throw redirect('/auth/login');
   }
 
 }

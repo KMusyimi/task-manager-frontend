@@ -9,8 +9,8 @@ interface inputProps {
   passwordData: string;
   disabled?: boolean;
   autoComplete?: React.HTMLInputAutoCompleteAttribute | undefined;
-  onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
-  onBlur?: (e: React.FormEvent<HTMLInputElement>) => void;
+  onInput?: (e: React.InputEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 function PasswordInputWrapper({ passwordData, ...rest }: inputProps) {

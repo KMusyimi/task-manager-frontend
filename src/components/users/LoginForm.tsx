@@ -12,12 +12,12 @@ export default function LoginForm() {
   const status = navigation.state;
 
 
-  const handleOnBlur = useCallback((e: React.FormEvent<HTMLInputElement>) => {
-    const { name, value } = e.currentTarget as HTMLInputElement;
+  const handleOnBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.currentTarget;
     setFormData(prev => ({ ...prev, [name]: value.trimEnd() }));
   }, []);
 
-  const onFocus = useCallback((e: React.FormEvent<HTMLInputElement>) => {
+  const onFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
     if (!isEmail) {
       e.currentTarget.focus()
@@ -27,8 +27,8 @@ export default function LoginForm() {
 
   }, [isEmail])
 
-  const handleOnInput = useCallback((e: React.FormEvent<HTMLInputElement>) => {
-    const { name, value } = e.currentTarget as HTMLInputElement;
+  const handleOnInput = useCallback((e: React.InputEvent<HTMLInputElement>) => {
+    const { name, value } = e.currentTarget;
     if (name === 'username') {
       const lowerValue = value.toLocaleLowerCase();
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -96,6 +96,5 @@ export default function LoginForm() {
           disabled={status === 'submitting'}>{status === 'submitting' ? "Logging in..." : "Login"}</button>
       </div>
     </Form>
-
   )
 }

@@ -6,7 +6,6 @@ interface ColorPickerProps {
 }
 
 
-
 function ColorsFieldset({ children }: ColorPickerProps) {
   return (
     <>

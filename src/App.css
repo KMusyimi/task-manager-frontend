@@ -133,7 +133,7 @@
   transition: transform 0.35s cubic-bezier(0.4, 0, 1, 1);
 }
 
-.dropdown-icon--active {
+.dropdown-icon.active {
   transform: rotate(180deg);
 }
 

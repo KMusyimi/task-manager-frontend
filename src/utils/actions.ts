@@ -15,7 +15,11 @@ const projectActionObj = {
       console.error('projectAction add errors ->', resp.message)
       return { error: resp.message, status: resp.status, timestamp: currentTimestamp }
     }
-    return redirect(`.?projectID=${resp.projectID.toString()}&message=${resp.message}`);
+
+    const projectID = encodeURIComponent(resp.projectID);
+    const msg = encodeURIComponent(resp.message);
+
+    return redirect(`.?projectID=${projectID}&message=${msg}`);
   },
 
   edit: async ({ username, payload }: { username: string, payload: FormParams }) => {
@@ -24,7 +28,10 @@ const projectActionObj = {
       console.error('projectAction edit errors ->', resp.message)
       return { error: resp.message, status: resp.status, timestamp: currentTimestamp }
     }
-    return redirect(`.?projectID=${resp.projectID.toString()}&message=${resp.message}`);
+    const projectID = encodeURIComponent(resp.projectID);
+    const msg = encodeURIComponent(resp.message);
+
+    return redirect(`.?projectID=${projectID}&message=${msg}`);
   },
 
   duplicate: async ({ username, payload }: { username: string, payload: FormParams }) => {
@@ -33,7 +40,11 @@ const projectActionObj = {
       console.error('projectAction duplicate errors ->', resp.message)
       return { error: resp.message, status: resp.status, timestamp: currentTimestamp }
     }
-    return redirect(`.?projectID=${resp.projectID.toString()}&message=${resp.message}`);
+
+    const projectID = encodeURIComponent(resp.projectID);
+    const msg = encodeURIComponent(resp.message);
+
+    return redirect(`.?projectID=${projectID}&message=${msg}`);
   },
 
   delete: async ({ username, payload }: { username: string, payload: FormParams }) => {
@@ -42,7 +53,8 @@ const projectActionObj = {
       console.error('projectAction delete errors ->', resp.message)
       return { error: resp.message, status: resp.status, timestamp: currentTimestamp }
     }
-    return redirect(`.?message=${resp.message}`);
+    const msg = encodeURIComponent(resp.message);
+    return redirect(`.?message=${msg}`);
   }
 }
 
@@ -53,10 +65,14 @@ const userActionObj = {
       console.error('userProfileAction edit-profile errors ->', response.message)
       return { error: response.message, status: response.status, timestamp: currentTimestamp } as ActionFuncError
     }
-    const { loginUsername: login_username, message } = response;
-    return redirect(`/projects/${login_username}/profile?message=${message}&${search ?? ''}`);
+    const { loginUsername, message } = response;
+    
+    const msg = encodeURIComponent(message);
+    const finalUrl = `/projects/${loginUsername}/profile?message=${msg}&${search ?? ''}`
+    
+    return redirect(finalUrl);
   },
-  
+
   changePw: async ({ username, payload }: { username: string, payload: FormParams }) => {
     const response = await changePassword(username, payload);
     if ('isError' in response) {
@@ -64,7 +80,8 @@ const userActionObj = {
       return { error: response.message, status: response.status, timestamp: currentTimestamp } as ActionFuncError
     }
     localStorage.removeItem('token');
-    return redirect(`/auth/login/?message=${response.message}`);
+    const msg = encodeURIComponent(response.message);
+    return redirect(`/auth/login/?message=${msg}`);
   }
 }
 
@@ -80,7 +97,8 @@ export async function signupAction({ request }: ActionFunctionArgs) {
       timestamp: currentTimestamp
     }
   }
-  return redirect(`/auth/login?message=${response.message}`);
+  const msg = encodeURIComponent(response.message);
+  return redirect(`/auth/login?message=${msg}`);
 }
 
 
@@ -88,10 +106,6 @@ export async function loginAction({ request }: ActionFunctionArgs) {
   const url = new URL(request.url);
   const searchParams = url.searchParams;
   const redirectPath = searchParams.get("redirect");
-
-  const logoutRegex = /\/profile\/logout\/?$/i;
-
-  const cleanUrl = redirectPath?.replace(logoutRegex, "") ?? redirectPath;
 
   const payload = await processFormData(request);
   const response = await loginUser(payload);
@@ -105,9 +119,10 @@ export async function loginAction({ request }: ActionFunctionArgs) {
     }
   }
   const { login_username, message } = response;
-  const path = cleanUrl ?? `/projects/${login_username}`;
+  const basePath = redirectPath ?? `/projects/${login_username}`;
+  const msg = encodeURIComponent(message);
 
-  return redirect(`${path}?message=${message}`);
+  return redirect(`${basePath}?message=${msg}`);
 
 }
 
@@ -120,7 +135,9 @@ export async function logoutAction() {
   }
 
   localStorage.removeItem('token');
-  return redirect(`/auth/login/?message=${response.message}`);
+  const msg = encodeURIComponent(response.message);
+
+  return redirect(`/auth/login/?message=${msg}`);
 }
 
 
@@ -143,15 +160,15 @@ export async function userProfileAction({ params, request }: ActionFunctionArgs)
     return { error: 'Username is missing', status: 401 };
   }
   await requireAuth(request);
-  
+
   const payload = await processFormData(request);
   const url = new URL(request.url);
-  
+
   const searchParams = url.searchParams;
   const search = searchParams.toString();
 
   const key = payload.intent as keyof typeof userActionObj;
-  return await userActionObj[key]({username, payload, search});
+  return await userActionObj[key]({ username, payload, search });
 }
 
 

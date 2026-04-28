@@ -33,11 +33,14 @@ export default function UploadImgPreview({ previewUrl, filename, fileSize, statu
             <p className="file-size">{fileSize}</p>
             <IconWrapper name="FaCloudArrowUp" style={uploadStatusStyles} />
             <span className="upload-status" aria-live="polite">{status}</span>
-            {fetcher.state === 'submitting' && <Spinner/>}
+            {fetcher.state === 'submitting' && <Spinner />}
           </div>
         </span>
       </div>
-      <button className="cancel-btn" type="button" onClick={handleDeleteFile}>
+      <button
+        className="cancel-btn"
+        type="button"
+        onClick={handleDeleteFile}>
         <IconWrapper
           className="delete-icon"
           name="FaTrash" />

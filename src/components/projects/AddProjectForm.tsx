@@ -1,16 +1,13 @@
-import React, { lazy, memo, Suspense, useCallback, useRef, useState, type FormEvent } from "react";
-import ProjectFormComponents from "../general/ProjectForm";
+import React, { memo, useCallback, useRef, useState } from "react";
 import { useFetcher } from "react-router-dom";
 import type { ProjectFormParams } from "../../models/entity";
+import ProjectFormComponents from "../general/ProjectForm";
 
-import IconWrapper from "../general/IconWrapper";
-
-const LoadSpinner = () => import("../general/Spinner");
-const Spinner = lazy(LoadSpinner);
 
 
 function AddProjectForm() {
-  const fetcher = useFetcher();
+  const fetcher = useFetcher({ key: 'add-pjt-key'});
+  const FormRef = useRef<HTMLFormElement>(null);
 
   const [formState, setFormState] = useState<ProjectFormParams>(() => ({
     intent: 'add',
@@ -20,42 +17,37 @@ function AddProjectForm() {
     inputName: 'projectID'
   }));
 
-  const FormRef = useRef<HTMLFormElement>(null);
 
-  const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>, fetch: typeof fetcher) => {
+  const handleSubmit = useCallback((e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    fetch
+    fetcher
       .submit(e.currentTarget, { method: 'POST' })
       .then(() => {
         if (FormRef.current) {
           setFormState({
-            intent: 'add',
-            projectName: "",
-            color: "",
-            payloadID: "",
-            inputName: 'projectID'
-          })
+            intent: 'add', projectName: "", color: "", payloadID: "", inputName: 'projectID'
+          });
           FormRef.current.reset();
         }
       })
       .catch((error: unknown) => { console.error('Error form failed to add project: ', error) });
+  }, [fetcher]);
+
+
+  const onInput = useCallback((e: React.InputEvent<HTMLInputElement>) => {
+    const { name, value } = e.currentTarget;
+    setFormState(prev => ({ ...prev, [name]: value }));
   }, []);
 
-
-  const onInput = useCallback((e: React.FormEvent<HTMLInputElement>) => {
-    const { name, value } = e.target as HTMLInputElement;
-    setFormState(prev => ({ ...prev, [name]: value }));
-  }, [])
-
-  const onBlur = useCallback((e: React.FormEvent<HTMLInputElement>) => {
-    const { name, value } = e.target as HTMLInputElement;
+  const onBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.currentTarget;
     setFormState(prev => ({ ...prev, [name]: value.trimEnd() }))
   }, []);
 
-  const onMouseEnter = useCallback(() => {
-    LoadSpinner()
-      .catch((e: unknown) => { console.error("could not prefetch spinner ", e) })
-  }, [])
+  const onChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.currentTarget;
+    setFormState(prev => ({ ...prev, [name]: value }));
+  }, []);
 
   return (
     <fetcher.Form
@@ -63,12 +55,12 @@ function AddProjectForm() {
       action="."
       className={"project-form"}
       method={'post'}
-      onSubmit={(e) => { handleSubmit(e, fetcher) }}>
+      onSubmit={handleSubmit}>
 
       <ProjectFormComponents
         intent="add"
         currentColor={formState.color}
-        onInput={onInput} >
+        onChange={onChange} >
         <input
           id="project-name"
           className="project-input"
@@ -81,19 +73,6 @@ function AddProjectForm() {
           onBlur={onBlur}
           defaultValue={formState.projectName}
           required />
-
-        <button
-          className={`submit-btn ${fetcher.state === 'submitting' ? 'submitting' : ''}`}
-          onMouseEnter={onMouseEnter}
-          type="submit"
-          disabled={fetcher.state === 'submitting'}>
-          {fetcher.state === 'idle' ?
-            <IconWrapper name={'FaPlus'} /> :
-            <Suspense fallback={null}>
-              <Spinner />
-            </Suspense>
-          }
-        </button>
       </ProjectFormComponents>
     </fetcher.Form>
   )

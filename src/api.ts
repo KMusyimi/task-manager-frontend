@@ -23,6 +23,7 @@ export async function loginUser(formData: SubmitData) {
 
   if (!resp.ok) {
     const errorData = await resp.json() as ErrorDetail;
+
     console.error(resp.statusText, errorData.detail);
     return {
       isError: true,

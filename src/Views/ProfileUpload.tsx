@@ -174,7 +174,7 @@ function ProfileUpload() {
     if (InputRef.current) { InputRef.current.click(); }
   }, [])
 
-  const handleOnInput = useCallback((e: React.FormEvent<HTMLInputElement>) => {
+  const handleOnInput = useCallback((e: React.InputEvent<HTMLInputElement>) => {
     const { files } = e.currentTarget;
     if (files) {
       const selectedFile = files[0]

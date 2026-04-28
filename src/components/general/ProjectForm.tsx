@@ -1,4 +1,7 @@
 import { lazy, memo, Suspense, useCallback, useDeferredValue, useState, type CSSProperties, type ReactNode } from "react";
+import { useFetcher } from "react-router-dom";
+import IconWrapper from "./IconWrapper";
+import Spinner from "./Spinner";
 
 
 const colorsArr = [
@@ -20,7 +23,7 @@ const styles: CSSProperties = { minHeight: 0 };
 interface FormParams {
   intent: 'add' | 'edit';
   currentColor: string
-  onInput: (e: React.FormEvent<HTMLInputElement>) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   children: ReactNode;
 }
 
@@ -37,7 +40,7 @@ const ColorLabelInputs = memo(({ colorValue, currentColor, onChange }: {
   currentColor: string,
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }) => {
-  
+
   const colorKey = colorValue.replace(/^#/, '');
   const isChecked = colorValue === currentColor;
 
@@ -57,7 +60,9 @@ const ColorLabelInputs = memo(({ colorValue, currentColor, onChange }: {
     </label>)
 })
 
-function ProjectFormComponents({ currentColor, intent, onInput, children }: FormParams) {
+function ProjectFormComponents({ currentColor, intent, onChange, children }: FormParams) {
+  const fetcher = useFetcher({ key: intent === 'add' ? 'add-pjt-key' : 'edit-pjt-key' });
+
   const [isToggled, setIsToggled] = useState(false);
 
   const deferColorsArr = useDeferredValue(colorsArr);
@@ -68,7 +73,11 @@ function ProjectFormComponents({ currentColor, intent, onInput, children }: Form
     LoadColorsFieldset()
       .catch((e: unknown) => { console.error('Failed to prefetch component ', e) })
   }, []);
-  const iconCls = isToggled ? 'dropdown-icon--active' : 'dropdown-icon';
+
+
+  const iconCls = isToggled ? 'dropdown-icon active' : 'dropdown-icon';
+  const isSubmitting = fetcher.state === 'submitting';
+  const bgFieldsetCls = isToggled ? 'bg-fieldset open' : 'bg-fieldset'
 
   return (
     <>
@@ -86,9 +95,17 @@ function ProjectFormComponents({ currentColor, intent, onInput, children }: Form
 
         {children}
 
+        <button
+          className={`submit-btn ${isSubmitting ? 'submitting' : ''}`}
+          type="submit"
+          disabled={isSubmitting}>
+          {!isSubmitting ?
+            <IconWrapper name={intent === 'add' ? 'FaPlus' : 'FaPenToSquare'} /> :
+            <Spinner />}
+        </button>
       </div>
 
-      <div className={`bg-fieldset  ${isToggled ? 'open' : ''}`}>
+      <div className={bgFieldsetCls}>
         <fieldset className={'colors-fieldset'} style={styles}>
           {isToggled &&
             <Suspense fallback={<ColorsSkeleton />}>
@@ -98,7 +115,7 @@ function ProjectFormComponents({ currentColor, intent, onInput, children }: Form
                     key={ArrColor}
                     colorValue={ArrColor}
                     currentColor={currentColor}
-                    onChange={onInput} />))}
+                    onChange={onChange} />))}
               </ColorFieldset>
             </Suspense>}
         </fieldset>

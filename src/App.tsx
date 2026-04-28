@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import './App.css';
 import Login from './Views/Login';
@@ -9,12 +9,13 @@ import ProjectLayout from './components/projects/ProjectsLayout';
 import { loginAction, logoutAction, profileUploadAction, projectAction, signupAction, userProfileAction } from './utils/actions';
 import { projectsLoader, projectsRedirectLoader, userProfileLoader } from './utils/loaders';
 import AuthLayout from './components/users/AuthLayout';
+import Spinner from './components/general/Spinner';
 
 const ProfileUpload = lazy(() => import('./Views/ProfileUpload'));
 const Logout = lazy(() => import('./Views/Logout'));
-const Error = lazy(() => import('./components/general/Error'));
+const Error = lazy(() => import('./Views/ErrorView'));
 
-const NotFound = lazy(() => import('./components/general/NotFound'));
+const NotFound = lazy(() => import('./Views/NotFound'));
 
 
 
@@ -44,11 +45,11 @@ const router = createBrowserRouter(createRoutesFromElements(
           <Route
             path={'upload'}
             action={profileUploadAction}
-            element={<ProfileUpload />}
+            element={<Suspense fallback={<Spinner />}><ProfileUpload /></Suspense>}
           />
           <Route
             path={'logout'}
-            element={<Logout />}
+            element={<Suspense fallback={<Spinner />}><Logout /></Suspense>}
             action={logoutAction} />
         </Route>
 

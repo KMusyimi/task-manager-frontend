@@ -71,12 +71,12 @@ function ChangePasswordMenu({ user }: ChangePasswordTypes) {
     }
   }, [formData.confirmPw, formData.newPw, touched.confirmPw])
 
-  const handleOnInput = useCallback((e: React.FormEvent<HTMLInputElement>) => {
+  const handleOnInput = useCallback((e: React.InputEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
     setFormData(prev => ({ ...prev, [name]: value }));
   }, [])
 
-  const handleOnblur = useCallback((e: React.FormEvent<HTMLInputElement>) => {
+  const handleOnblur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
     if (!value) return;
 

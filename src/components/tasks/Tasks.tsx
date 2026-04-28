@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { useInfiniteScroll } from '../../hooks/CustomHooks';
+import { useInfiniteScroll } from '../../hooks/ViewPortHooks';
 import type { Task, TasksEntity } from "../../models/ProjectsModel";
 
 import Skeleton from "../skeleton/Skeleton";

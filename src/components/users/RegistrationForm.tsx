@@ -10,15 +10,15 @@ export default function RegistrationForm() {
   const navigation = useNavigation();
   const status = navigation.state;
 
-  const [formData, setFormData] = useState<CreateUserParams>({ email: '', username: '', password: '' });
+  const [formData, setFormData] = useState<CreateUserParams>(() => ({ email: '', username: '', password: '' }));
 
-  const handleOnBlur = useCallback((e: React.FormEvent<HTMLInputElement>) => {
-    const { name, value } = e.currentTarget as HTMLInputElement;
+  const handleOnBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.currentTarget;
     setFormData(prev => ({ ...prev, [name]: value.trimEnd() }));
   }, []);
 
-  const handleOnInput = useCallback((e: React.FormEvent<HTMLInputElement>) => {
-    const { name, value } = e.currentTarget as HTMLInputElement;
+  const handleOnInput = useCallback((e: React.InputEvent<HTMLInputElement>) => {
+    const { name, value } = e.currentTarget;
     setFormData(prev => ({ ...prev, [name]: value }));
   }, [])
 

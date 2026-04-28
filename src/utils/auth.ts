@@ -5,15 +5,11 @@ import type { ErrorDetail } from "../models/entity";
 import { jwtDecode } from "jwt-decode";
 
 
-interface AuthorizationHeader {
-  Authorization: string;
-}
-
 const loginMessage = 'To access your account and its features, please log in.'
 
 export default function authHeader() {
   const token = getAuthToken();
-  return { Authorization: `Bearer ${token ?? ''}` } as AuthorizationHeader;
+  return { Authorization: `Bearer ${token ?? ''}` };
 }
 
 export const getAuthToken = () => {
@@ -33,16 +29,21 @@ export const storeAccessToken = (accessToken: string) => {
 
 
 export async function requireAuth(request: Request) {
-  console.log("Require Authorization");
   const url = new URL(request.url);
 
   const pathname = url.pathname;
 
   const token = getAuthToken();
   if (!token) {
+    const segments = url.pathname.split('/').filter(Boolean);
+
+    const redirectPath = segments[0] === 'projects'
+      ? '/projects'
+      : url.pathname;
+
     const params = new URLSearchParams({
       message: loginMessage,
-      redirect: pathname
+      redirect: redirectPath
     });
     throw redirect(`/auth/login?${params.toString()}`);
   }

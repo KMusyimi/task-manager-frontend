@@ -152,7 +152,7 @@ function UsersView() {
                 search={search} />
             </PanelWrapper>
           </div>
-          
+
           <AnimatePresence mode='wait' custom={direction}>
             <motion.div
               key={activeMenu} // Key triggers the exit/entry
@@ -176,11 +176,7 @@ function UsersView() {
           </AnimatePresence>
         </div>
       </div >
-      <Overlay
-        isActive={true}
-        zIndex={zIndex}>
-        <Outlet />
-      </Overlay>
+      <Overlay isActive={true} zIndex={zIndex}><Outlet /> </Overlay>
     </>)
 
 }
