@@ -1,6 +1,5 @@
-import { lazy, memo, Suspense, type JSX } from "react";
+import { lazy, memo, type JSX } from "react";
 import { useActionData } from "react-router-dom";
-import { AuthFormSkeleton } from "../components/users/AuthLayout";
 import useActionError from "../hooks/ActionErrorHook";
 import type { signupAction } from "../utils/actions";
 
@@ -12,19 +11,7 @@ function Register(): JSX.Element {
   const errData = useActionData<typeof signupAction>();
   useActionError(errData);
 
-  return (
-    <div className={'register-form--container'}>
-      <hgroup>
-        <h1>Sign Up Your journey starts here.</h1>
-        <h4>Register</h4>
-      </hgroup>
-
-      <Suspense fallback={<AuthFormSkeleton />}>
-        <RegistrationForm />
-      </Suspense>
-    </div>
-
-  )
+  return (<RegistrationForm />)
 }
 
 export default memo(Register);

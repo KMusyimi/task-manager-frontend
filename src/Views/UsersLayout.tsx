@@ -1,20 +1,21 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { lazy, memo, useCallback, useMemo, useState, useTransition } from "react";
+import { CSSProperties, lazy, memo, ReactNode, Suspense, useCallback, useMemo, useState, useTransition } from "react";
 import { Link, Outlet, useRouteLoaderData, useSearchParams } from "react-router-dom";
 
-import ProfileImg, { ProfileImgView } from "../components/general/ProfileImg";
-import PanelWrapper from "../components/users/MenuPanelWrapper";
+import ProfileImg from "../components/general/ProfileImg";
 
 import Overlay from "../components/general/Overlay";
-import Spinner from '../components/general/Spinner';
-import MainProfileMenu from "../components/users/MainProfileMenu";
-import SubMenu from "../components/users/SubMenu";
-import { userProfileLoader } from '../utils/loaders';
+import Spinner, { RouterElSpinner } from '../components/general/Spinner';
 import { UserResponse } from '../models/UserModel';
+import { userProfileLoader } from '../utils/loaders';
 
 export type MenuTypes = 'mainMenu' | 'settings' | 'myProfile' | 'changePw';
 
 const IconWrapper = lazy(() => import("../components/general/IconWrapper"));
+const MainProfileMenu = lazy(() => import("../components/users/MainProfileMenu"));
+const SubMenu = lazy(() => import("../components/users/SubMenu"));
+
+const ProfileImgView = lazy(() => import('../components/general/ProfileImg').then((module) => ({ default: module.ProfileImgView })));
 
 
 export interface IsMenuType {
@@ -33,6 +34,41 @@ interface credsTypes {
   search: string;
   displayImgView?: (e: React.MouseEvent) => void;
 }
+
+interface MenuPanelTypes {
+  isMenu: IsMenuType;
+  goBack: () => void;
+  search: string;
+  children: ReactNode;
+}
+
+const styles: CSSProperties = { rotate: '180deg' };
+
+const PanelWrapper = memo(({ isMenu, search, goBack, children }: MenuPanelTypes) => {
+
+  return (
+    <div className="panel-wrapper" onClick={(e) => { e.stopPropagation() }}>
+      {isMenu.notMain &&
+        <button type="button"
+          className="back-btn"
+          aria-label="back"
+          onClick={goBack}>
+          <IconWrapper name='FaAngleRight' style={styles} />
+        </button>}
+
+      {isMenu.mainOrProfile ?
+        <div className={`profile-wrapper`}>{children}</div>
+        : <h1 className="menu-title">{isMenu.settings ? "Settings" : "Change Password"}</h1>
+      }
+      {isMenu.isMain &&
+        <Link
+          className="back-link"
+          to={{ pathname: '..', search: search ? `?${search}` : '' }}>
+          <IconWrapper className="back-icon" name="FaRegCircleXmark" />
+        </Link>}
+    </div>
+  )
+})
 
 
 const ProfileContent = memo(({ isMainMenu, search, user }: credsTypes) => {
@@ -66,22 +102,25 @@ const ProfileContent = memo(({ isMainMenu, search, user }: credsTypes) => {
         <p className="user-email">{user.email || 'youexample.email.com'}</p>
       </div>
 
-      {isViewImg && <ProfileImgView
-        isViewImg={true}
-        closeImgView={closeImgView}
-        imgUrl={user.profileImgUrl} />}
+      {isViewImg &&
+        <Suspense fallback={<RouterElSpinner />}>
+          <ProfileImgView
+            isViewImg={true}
+            closeImgView={closeImgView}
+            imgUrl={user.profileImgUrl} />
+        </Suspense>
+      }
     </>
   )
 })
 
-function UsersView() {
+function UsersLayout() {
   const data = useRouteLoaderData<typeof userProfileLoader>('project-root');
   const user = data?.user;
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPending, startTransition] = useTransition();
   // 1 for forward, -1 for back
   const [direction, setDirection] = useState(1);
-
 
   const { zIndex, activeMenu, search } = useMemo(() => (
     {
@@ -92,8 +131,8 @@ function UsersView() {
 
   const navigateTo = useCallback((menu: MenuTypes) => {
     // u-m stands for user menu
-    setDirection(1);
     startTransition(() => {
+      setDirection(1);
       setSearchParams((prev) => {
         const nextParams = new URLSearchParams(prev);
         nextParams.set('u-m', menu);
@@ -104,8 +143,8 @@ function UsersView() {
 
 
   const goBack = useCallback(() => {
-    setDirection(-1);
     startTransition(() => {
+      setDirection(-1);
       setSearchParams((prev) => {
         const nextParams = new URLSearchParams(prev);
         nextParams.delete('u-m');
@@ -136,7 +175,7 @@ function UsersView() {
   if (!user) {
     return (
       <Overlay isActive={true} zIndex={300}>
-        <Spinner />
+        <RouterElSpinner />
       </Overlay>)
   }
 
@@ -164,24 +203,31 @@ function UsersView() {
               layout // Smoothly handles height changes between menus
               style={{ filter: isPending ? 'blur(1px)' : 'none', opacity: isPending ? 0.8 : 1 }}
               className="menu-wrapper">
-              {isMenu.isMain ?
-                <MainProfileMenu
-                  isActive={isMenu.isMain}
-                  search={search}
-                  navigateTo={navigateTo} />
-                :
-                <SubMenu activeMenu={activeMenu} user={user} />
-              }
+              <Suspense fallback={<Spinner />}>
+                {isMenu.isMain ?
+                  <MainProfileMenu
+                    isActive={isMenu.isMain}
+                    search={search}
+                    navigateTo={navigateTo} />
+                  :
+                  <SubMenu activeMenu={activeMenu} user={user} />
+                }
+              </Suspense>
             </motion.div>
           </AnimatePresence>
         </div>
+        <Overlay isActive={true} zIndex={zIndex}>
+          <Suspense fallback={<RouterElSpinner />}>
+            <Outlet />
+          </Suspense>
+        </Overlay>
       </div >
-      <Overlay isActive={true} zIndex={zIndex}><Outlet /> </Overlay>
     </>)
 
 }
 
 
 ProfileContent.displayName = 'ProfileContent';
+PanelWrapper.displayName = 'PanelWrapper';
 
-export default memo(UsersView);
+export default memo(UsersLayout);

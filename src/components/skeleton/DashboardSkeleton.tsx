@@ -2,33 +2,36 @@ import { memo } from "react";
 import Skeleton from "./Skeleton";
 
 
-const skeletonLines = Array.from({ length: 3 });
-const skeletonBox = Array.from({ length: 2 });
+const skeletonCards = Array.from({ length: 3 });
+const skeletonNavItems = Array.from({ length: 2 });
 
-const TaskSectionSkeleton = memo(() => {
-  
+const TaskContainerSkeleton = memo(() => {
+
   return (
     <>
-      <section className="task-section">
-        <header className="task-header flex" >
-          <Skeleton type={"line"} width={'90%'} height={'40px'} />
-          <Skeleton type={"line"} width={'45%'} height={'1em'} />
-        </header>
-        <div className="tasks-container">
-          {skeletonLines.map((_, i) => (
-            <div key={`${i.toString()}-r`} className="task-card">
-              <Skeleton type={"line"} width={'135px'} height={'20px'} />
-              <Skeleton type={"line"} width={'100%'} height={'65px'} />
-              <Skeleton type={"line"} width={'35%'} />
-              <Skeleton type={"line"} width={'50%'} />
-              <Skeleton type={"line"} width={'35%'} />
-            </div>))}
-        </div>
-      </section>
+      {skeletonCards.map((_, i) => (
+        <div key={`${i.toString()}-r`} className="task-card">
+          <Skeleton type={"line"} width={'135px'} height={'20px'} />
+          <Skeleton type={"line"} width={'100%'} height={'65px'} />
+          <Skeleton type={"line"} width={'35%'} />
+          <Skeleton type={"line"} width={'50%'} />
+          <Skeleton type={"line"} width={'35%'} />
+        </div>))}
     </>
   )
 })
 
+const NavItemsSkeleton = memo(() => {
+  return (
+    <>
+      {skeletonNavItems.map((_, i) => (
+        <li key={`r-${i.toString()}`} className="nav-list-items">
+          <Skeleton type="box" className="items-container" />
+        </li>
+      ))}
+    </>
+  )
+})
 
 const InputWrapperSkeleton = memo(() => {
   return (
@@ -58,22 +61,27 @@ function DashboardSkeleton() {
 
         <nav className="projects-nav">
           <ul className={'nav-list'}>
-            {skeletonBox.map((_, i) => (
-              <li key={`r-${i.toString()}`} className="nav-list-items">
-                <Skeleton type="box" className="items-container" />
-              </li>
-            ))}
+            <NavItemsSkeleton />
           </ul>
         </nav>
         <div className="project-form">
           <InputWrapperSkeleton />
         </div>
       </aside>
-      <TaskSectionSkeleton />
+      <section className="task-section">
+        <header className="task-header flex" >
+          <Skeleton type={"line"} width={'90%'} height={'40px'} />
+          <Skeleton type={"line"} width={'45%'} height={'1em'} />
+        </header>
+        <div className="tasks-container">
+          <TaskContainerSkeleton />
+        </div>
+      </section>
     </>)
 }
 
-TaskSectionSkeleton.displayName =  'TaskSectionSkeleton';
+TaskContainerSkeleton.displayName = 'TaskContainerSkeleton';
+NavItemsSkeleton.displayName = 'NavItemsSkeleton';
 InputWrapperSkeleton.displayName = 'InputWrapperSkeleton';
 
 export default memo(DashboardSkeleton);

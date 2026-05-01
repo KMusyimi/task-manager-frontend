@@ -1,5 +1,10 @@
+.spinner-container {
+  width: fit-content;
+  margin: 0 auto;
+}
+
 .sk-fading-circle {
-  margin:  auto;
+  margin: auto;
   width: 30px;
   height: 30px;
   position: relative;
@@ -112,6 +117,10 @@
   animation-delay: -0.1s;
 }
 
+.loading-text {
+  margin-top: 15px;
+  color: var(--text-color);
+}
 
 @keyframes sk-circleFadeDelay {
 

@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
-import type { MenuTypes } from "../../Views/UsersView";
+import type { MenuTypes } from "../../Views/UsersLayout";
 
 import IconWrapper, { type iconKeyTypes } from "../general/IconWrapper";
 

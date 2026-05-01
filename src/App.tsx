@@ -1,20 +1,19 @@
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import './App.css';
-import Login from './Views/Login';
-import DashboardView from './Views/DashboardView';
-import Register from './Views/Register';
-import UsersView from './Views/UsersView';
-import ProjectLayout from './components/projects/ProjectsLayout';
+import AuthLayout from './components/users/AuthLayout';
 import { loginAction, logoutAction, profileUploadAction, projectAction, signupAction, userProfileAction } from './utils/actions';
 import { projectsLoader, projectsRedirectLoader, userProfileLoader } from './utils/loaders';
-import AuthLayout from './components/users/AuthLayout';
-import Spinner from './components/general/Spinner';
+import ProjectLayout from './Views/ProjectsLayout';
+import UsersLayout from './Views/UsersLayout';
 
 const ProfileUpload = lazy(() => import('./Views/ProfileUpload'));
 const Logout = lazy(() => import('./Views/Logout'));
 const Error = lazy(() => import('./Views/ErrorView'));
+const Register = lazy(() => import('./Views/Register'));
+const Login = lazy(() => import('./Views/Login'));
 
+const DashboardView = lazy(() => import('./Views/DashboardView'));
 const NotFound = lazy(() => import('./Views/NotFound'));
 
 
@@ -40,16 +39,16 @@ const router = createBrowserRouter(createRoutesFromElements(
         <Route
           path='profile'
           id='user-profile'
-          element={<UsersView />}
+          element={<UsersLayout />}
           action={userProfileAction}>
           <Route
             path={'upload'}
             action={profileUploadAction}
-            element={<Suspense fallback={<Spinner />}><ProfileUpload /></Suspense>}
+            element={<ProfileUpload />}
           />
           <Route
             path={'logout'}
-            element={<Suspense fallback={<Spinner />}><Logout /></Suspense>}
+            element={<Logout />}
             action={logoutAction} />
         </Route>
 

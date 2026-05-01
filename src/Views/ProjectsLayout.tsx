@@ -1,27 +1,29 @@
-import { CSSProperties, memo, ReactNode, useCallback, useMemo, useRef, useState } from "react";
+import { CSSProperties, lazy, memo, ReactNode, Suspense, useCallback, useMemo, useRef, useState } from "react";
 import { Link, Outlet, useLoaderData, useSearchParams } from "react-router-dom";
-import { useToastMessage } from "../../hooks/MessageHandlerHook";
-import { useMediaQuery } from "../../hooks/ViewPortHooks";
-import { userProfileLoader } from "../../utils/loaders";
-import LogoImg from "../general/LogoImg";
-import ProfileImg from "../general/ProfileImg";
-import { ContextMenuProvider } from "../providers/ContextMenuProvider";
-import DeleteModalProvider from "../providers/DeleteModalProvider";
+import LogoImg from "../components/general/LogoImg";
+import ProfileImg from "../components/general/ProfileImg";
+import { ContextMenuProvider } from "../components/providers/ContextMenuProvider";
+import DeleteModalProvider from "../components/providers/DeleteModalProvider";
+import { useToastMessage } from "../hooks/MessageHandlerHook";
+import { useMediaQuery } from "../hooks/ViewPortHooks";
+import { userProfileLoader } from "../utils/loaders";
 
 
-import IconWrapper from "../general/IconWrapper";
+import DashboardSkeleton from "../components/skeleton/DashboardSkeleton";
+const IconWrapper = lazy(() => import("../components/general/IconWrapper"));
 
 
-const LoadProfile = () => import("../../Views/UsersView");
+const LoadProfile = () => import("./UsersLayout");
+
+const h1Styles: CSSProperties = { fontFamily: '"Inter", "Inter-Fallback"' }
 
 export interface ProjectContextType {
+  isMobileSidebarOpen: boolean;
   username: string;
-  isSidebarOpen: boolean;
   isMobile: boolean;
   closeSidebar: () => void;
 }
 
-const h1Styles: CSSProperties = { fontFamily: '"Inter", "Inter-Fallback", system-ui, Avenir, Helvetica, sans-serif' }
 
 const HeaderContents = memo(({ children }: { children: ReactNode }) => {
   return (
@@ -56,10 +58,11 @@ function ProjectLayout() {
         .catch((e: unknown) => { console.error('Failed to prefetch lazy component ', e) })
     }
   }, []);
+  const isMobileSidebarOpen = isMobile && isSidebarOpen;
 
   const memorizedData = useMemo(() => ({
-    isSidebarOpen, isMobile, closeSidebar, username: user.username
-  }), [closeSidebar, isMobile, isSidebarOpen, user.username]);
+    isMobileSidebarOpen, isMobile, closeSidebar, username: user.username
+  }), [closeSidebar, isMobile, isMobileSidebarOpen, user.username]);
 
   return (
     <div className="container">
@@ -82,8 +85,10 @@ function ProjectLayout() {
       <main className="main">
         <ContextMenuProvider>
           <DeleteModalProvider>
-            <Outlet
-              context={memorizedData satisfies ProjectContextType} />
+            <Suspense fallback={<DashboardSkeleton />}>
+              <Outlet
+                context={memorizedData satisfies ProjectContextType} />
+            </Suspense>
           </DeleteModalProvider>
         </ContextMenuProvider>
       </main>

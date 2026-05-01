@@ -8,7 +8,7 @@ import AddProjectForm from "./AddProjectForm";
 
 import LogoImg from "../general/LogoImg";
 
-import { ProjectContextType } from "./ProjectsLayout";
+import { ProjectContextType } from "../../Views/ProjectsLayout";
 
 import Skeleton from "../skeleton/Skeleton";
 const LoadSpinner = () => import("../general/Spinner");
@@ -110,12 +110,11 @@ const ProjectNav = memo(({ count, children }: { count: number, children: ReactNo
 
 
 function ProjectsSideBar({ projects }: SideBarParamsType) {
-  const { isMobile, closeSidebar, isSidebarOpen } = useOutletContext<ProjectContextType>();
+  const { isMobile, closeSidebar, isMobileSidebarOpen } = useOutletContext<ProjectContextType>();
 
   const projectsLength = projects.length;
 
   const hasProjects = projectsLength > 0;
-  const isMobileSidebarOpen = isMobile && isSidebarOpen;
 
   const onMouseEnter = useCallback(() => {
     LoadSpinner()

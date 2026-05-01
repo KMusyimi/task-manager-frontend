@@ -3,15 +3,14 @@ import { Outlet, useLoaderData, useOutletContext } from "react-router-dom";
 
 import type { projectsLoader } from "../utils/loaders";
 
-import { ProjectContextType } from "../components/projects/ProjectsLayout";
-import DashboardSkeleton from "../components/skeleton/DashboardSkeleton";
 import useDeleteModal, { useContextMenu } from "../hooks/ProviderHooks";
 
+import Dashboard from "../components/projects/Dashboard";
 
 import Overlay from "../components/general/Overlay";
 import Spinner from "../components/general/Spinner";
+import { ProjectContextType } from "./ProjectsLayout";
 
-const Dashboard = lazy(() => import("../components/projects/Dashboard"));
 
 const EditProjectForm = lazy(() => import("../components/projects/EditProjectForm"));
 const ProjectContextMenu = lazy(() => import("../components/projects/ProjectContextMenu"));
@@ -20,8 +19,7 @@ const DeleteModal = lazy(() => import("../components/modals/DeleteModal"));
 
 function DashboardView() {
   const { projectsResp } = useLoaderData<typeof projectsLoader>();
-  const { isMobile, closeSidebar, isSidebarOpen } = useOutletContext<ProjectContextType>();
-
+  const { isMobileSidebarOpen, closeSidebar } = useOutletContext<ProjectContextType>();
   const { openModal } = useDeleteModal();
 
   const { isMenuOpen, closeMenu } = useContextMenu();
@@ -33,14 +31,11 @@ function DashboardView() {
   const closeEditForm = useCallback(() => { setOpenForm(false) }, []);
 
   const isMenuOrFormOrModalOpen = isMenuOpen || openForm || openModal;
-  const isMobileSidebarOpen = isMobile && isSidebarOpen;
+
 
   return (
     <>
-      <Suspense fallback={<DashboardSkeleton />}>
-        <Dashboard dataPromise={projectsResp} />
-      </Suspense>
-
+      <Dashboard dataPromise={projectsResp} />
       <Outlet />
 
       {isMenuOrFormOrModalOpen ? (
@@ -55,13 +50,9 @@ function DashboardView() {
             {openForm && <EditProjectForm
               closeEditForm={closeEditForm} />}
           </Suspense>
-        </Overlay>
-      ) : (
-        (isMobileSidebarOpen) && (
-          <Overlay
-            isActive={true}
-            closeOverlay={closeSidebar} />)
-      )}
+        </Overlay>)
+        : (isMobileSidebarOpen && (<Overlay isActive={true} closeOverlay={closeSidebar} />)
+        )}
     </>
   )
 }

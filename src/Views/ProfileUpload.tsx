@@ -5,7 +5,7 @@ import IconWrapper from "../components/general/IconWrapper";
 import UploadImgPreview from "../components/general/UploadImgPreview";
 
 import { useFlashMessage } from "../hooks/ProviderHooks";
-import {IconColors } from "../utils/utils";
+import { IconColors } from "../utils/utils";
 
 const errStyles: CSSProperties = { borderColor: '#e24749' }
 
@@ -216,7 +216,7 @@ function ProfileUpload() {
   const isStatusErrorOrSuccess = uploadState.status === 'success' || uploadState.status === 'error';
   const alertSuccessTextCls = actionData?.error ? 'alert-text' : 'success-text';
 
-
+  const isSubmitting = fetcher.state === 'submitting';
 
   return (
     <div className="profile-upload--wrapper">
@@ -226,7 +226,7 @@ function ProfileUpload() {
           <p>Select and upload a new image.</p>
         </span>
         <Link
-          to={{ pathname: fetcher.state === 'idle' ? '..' : 'javascript:void(0)', search: search ? `?${search}` : '' }}
+          to={{ pathname: !isSubmitting ? '..' : 'javascript:void(0)', search: search ? `?${search}` : '' }}
           relative="path">
 
           <IconWrapper className="back-icon" name="FaRegCircleXmark" />
@@ -263,6 +263,7 @@ function ProfileUpload() {
           className="file-input"
           type={"file"}
           name="file"
+          disabled={isSubmitting}
           accept={"image/png, image/jpeg, image/webp"}
           onInput={handleOnInput}
           hidden />
@@ -271,7 +272,7 @@ function ProfileUpload() {
             className="upload-btn"
             type="submit"
             onClick={() => { handleOnSubmit(uploadState) }}
-            disabled={isStatusErrorOrSuccess}>
+            disabled={isStatusErrorOrSuccess || isSubmitting}>
             {fetcher.state === 'submitting' ? 'Uploading...' : 'Upload Image'}
           </button>)}
       </main>

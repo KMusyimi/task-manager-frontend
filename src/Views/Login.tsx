@@ -1,7 +1,6 @@
-import { lazy, memo, Suspense, type JSX } from "react";
+import { lazy, memo, type JSX } from "react";
 import { useActionData } from "react-router-dom";
 
-import { AuthFormSkeleton } from "../components/users/AuthLayout";
 import useActionError from "../hooks/ActionErrorHook";
 import { useToastMessage } from "../hooks/MessageHandlerHook";
 import type { loginAction } from "../utils/actions";
@@ -14,19 +13,7 @@ function Login(): JSX.Element {
   useToastMessage();
   useActionError(errData);
 
-
-  return (
-    <div className="login-form--container">
-      <hgroup>
-        <h1>Welcome back to Tasker!</h1>
-        <h4>Login</h4>
-      </hgroup>
-
-      <Suspense fallback={<AuthFormSkeleton />}>
-        <LoginForm />
-      </Suspense>
-    </div>
-  )
+  return (<LoginForm />)
 }
 
 export default memo(Login);

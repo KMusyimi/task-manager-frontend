@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { lazy, memo, Suspense, type JSX } from "react";
 import type { UserResponse } from "../../models/UserModel";
-import type { MenuTypes } from "../../Views/UsersView";
+import type { MenuTypes } from "../../Views/UsersLayout";
 import Spinner from '../general/Spinner';
 
 const ChangePasswordMenu = lazy(() => import("./ChangePasswordMenu"));

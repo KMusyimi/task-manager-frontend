@@ -1,12 +1,12 @@
 import { memo, use, useMemo } from "react";
 
+import { useOutletContext } from "react-router-dom";
 import { useProjectIDSearchParams } from "../../hooks/ProjectIDHook";
 import { PriorityMap, type Task } from "../../models/ProjectsModel";
 import { ProjectsResponse } from "../../models/UserModel";
+import { ProjectContextType } from "../../Views/ProjectsLayout";
 import TaskContainer from '../tasks/Tasks';
 import ProjectsSideBar from "./ProjectsSideBar";
-import { useOutletContext } from "react-router-dom";
-import { ProjectContextType } from "./ProjectsLayout";
 
 
 
@@ -45,17 +45,17 @@ function Dashboard({ dataPromise }: DashboardParams) {
 
   const { projectsArr, tasksArr } = useMemo(() => {
     const targetID = activeID ? Number(activeID) : null;
-    
+
     const pArr = projects.map(({ tasks, ...metadata }) => ({
       ...metadata, taskCount: tasks.length
     }));
-    
+
     const tasks = targetID
-    ? projects.find(p => p.projectID === targetID)?.tasks ?? []
-    : projects.flatMap(p => p.tasks);
-    
+      ? projects.find(p => p.projectID === targetID)?.tasks ?? []
+      : projects.flatMap(p => p.tasks);
+
     const tArr = [...tasks].sort(compareTaskByPriority);
-    
+
     return {
       projectsArr: pArr,
       tasksArr: tArr
