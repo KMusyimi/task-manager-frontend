@@ -2,20 +2,30 @@ import { use } from "react";
 import { ContextMenuCtx } from "../components/providers/ContextMenuProvider";
 import { DeleteContext } from "../components/providers/DeleteModalProvider";
 import { FlashMessageCxt } from "../components/providers/FlashMessageProvider";
+import { ThemeContext } from "../components/providers/ThemeProvider";
 
 
-export function useContextMenu() {
+
+export function useContextMenu()
+{
   const context = use(ContextMenuCtx);
   return context;
 }
 
-export function useFlashMessage() {
+export function useFlashMessage()
+{
   const context = use(FlashMessageCxt);
   return context;
 }
 
-export default function useDeleteModal() {
+export default function useDeleteModal()
+{
   const context = use(DeleteContext);
+  return context;
+}
+
+export function useThemeContext(){
+  const context = use(ThemeContext);
   return context;
 }
 

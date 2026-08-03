@@ -1,11 +1,11 @@
-import { memo, ReactNode } from "react";
+import { CSSProperties, memo, ReactNode } from "react";
 import Overlay from "./Overlay";
-import './style/Spinner.css';
 
 
 const circle = Array.from<unknown>({ length: 12 });
 
-export const RouterElSpinner = memo(() => {
+export const RouterElSpinner = memo(() =>
+{
   return (
     <Overlay isActive={true} zIndex={500}>
       <Spinner>
@@ -16,11 +16,12 @@ export const RouterElSpinner = memo(() => {
 })
 
 
-function Spinner({ children }: { children?: ReactNode }) {
+function Spinner({ style, children }: { children?: ReactNode, style?:CSSProperties })
+{
 
   return (
     <div className="spinner-container">
-      <div className="sk-fading-circle">
+      <div className="sk-fading-circle" style={{marginBottom: '1em', ...style}}>
         {circle.map((_, i) => (
           <div
             key={`sp-${i.toString()}`}

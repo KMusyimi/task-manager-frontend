@@ -1,0 +1,155 @@
+:root {
+  --modal-icon-size-s: 16px;
+  --modal-icon-size-l: 16px;
+}
+
+.modal-content {
+  background-color: var(--bg-card);
+  width: min(calc(100% - 2em), 350px);
+  margin: auto;
+  text-align: center;
+  overflow: hidden;
+  border-radius: 1em;
+  border: 1px solid var(--border-card);
+  box-shadow: var(--card-shadow);
+}
+
+.modal-content button {
+  font-size: .885rem;
+}
+
+.modal-content .modal-header,
+.modal-content .form-wrapper {
+  padding: .65em .785em;
+}
+
+.modal-content .modal-header {
+  background-color: color-mix(in srgb, var(--bg-secondary) 30%, transparent);
+  flex-flow: row;
+  align-items: center;
+  border-bottom: 1px solid var(--border-card);
+  gap: .75em;
+}
+
+.modal-content .modal-header>i {
+  width: var(--modal-icon-size-l);
+  isolation: isolate;
+  content-visibility: auto;
+  contain-intrinsic-size: var(--modal-icon-size-l);
+}
+
+
+
+.modal-content .modal-header h1 {
+  justify-self: left;
+  font-size: 1.115rem;
+  letter-spacing: -0.025em;
+}
+
+.logout-input {
+  background-color: var(--bg-input-focus);
+  font-weight: 600;
+  padding: .7em .65em;
+  width: 100%;
+  margin-bottom: 1em;
+  border-radius: .75em;
+  border: 1px solid var(--border-color);
+}
+
+
+.logout-input.is-invalid:not(:placeholder-shown) {
+  border-color: var(--primary-red);
+}
+
+.logout-input::placeholder {
+  font-family: var(--font-mono);
+  font-size: .8rem;
+}
+
+.modal-content .modal-header button {
+  background-color: transparent;
+  color: var(--text-muted);
+  font-size: .885rem;
+  padding: .285em .5em;
+  margin-left: auto;
+  transition: color .25s ease;
+}
+
+.modal-content .modal-header button:focus,
+.modal-content .modal-header button:hover {
+  color: var(--text-color);
+}
+
+.modal-content .modal-text {
+  color: var(--text-color);
+  font-size: .815rem;
+  text-align: center;
+  font-weight: normal;
+  margin-bottom: 1em;
+}
+
+.modal-content p .text-bold {
+  font-family: var(--font-header);
+  font-weight: bold;
+  color: var(--primary-red);
+}
+
+.modal-content form {
+  height: 100%;
+}
+
+
+.modal-content .modal--grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-template-rows: 1fr;
+  align-items: center;
+  gap: .75em;
+}
+
+.modal-content .form-wrapper .btn-wrapper {
+  gap: .75em;
+  justify-content: space-between;
+}
+
+
+.form-wrapper button,
+.modal-content .modal--grid button {
+  width: 100%;
+  height: inherit;
+  font-weight: normal;
+  padding: .625em .885em;
+  border-radius: .625em;
+  border: 2px solid transparent;
+  transition: border-color .25s ease;
+}
+
+.form-wrapper button:hover,
+.modal-content .modal--grid button:hover {
+  border-color: color-mix(in srgb, var(--btn-border-color) 60%, transparent);
+}
+
+.form-wrapper button[type='button'],
+.modal-content .modal--grid button[type='button'] {
+  --btn-border-color: var(--border-color);
+  background-color: var(--secondary-grey);
+  color: var(--text-muted);
+}
+
+.modal-content .submit-btn {
+  --btn-border-color: var(--primary-blue);
+  background-color: color-mix(in srgb, var(--secondary-blue) 30%, transparent);
+  color: var(--primary-blue);
+}
+
+.modal-content .submit-btn.logout,
+.modal-content .delete-btn {
+  --btn-border-color: var(--primary-red);
+  background-color: color-mix(in srgb, var(--primary-red) 20%, transparent);
+  color: var(--primary-red);
+}
+
+.modal-content .delete-btn:focus,
+.modal-content .delete-btn:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary-red) 50%, transparent);
+}

@@ -5,12 +5,12 @@ import useActionError from "../hooks/ActionErrorHook";
 import { useToastMessage } from "../hooks/MessageHandlerHook";
 import type { loginAction } from "../utils/actions";
 
-const LoginForm = lazy(() => import("../components/users/LoginForm"));
+const LoginForm = lazy(() => import("../components/general/Auth/LoginForm"));
 
 
 function Login(): JSX.Element {
   const errData = useActionData<typeof loginAction>();
-  useToastMessage();
+  useToastMessage(errData?.error? 'error': 'success');
   useActionError(errData);
 
   return (<LoginForm />)

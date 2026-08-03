@@ -1,6 +1,5 @@
 .spinner-container {
   width: fit-content;
-  margin: 0 auto;
 }
 
 .sk-fading-circle {
@@ -24,7 +23,7 @@
   margin: 0 auto;
   width: 15%;
   height: 15%;
-  background-color: var(--color-grey);
+  background-color: var(--text-muted);
   border-radius: 100%;
   animation: sk-circleFadeDelay 1.2s infinite ease-in-out both;
 }

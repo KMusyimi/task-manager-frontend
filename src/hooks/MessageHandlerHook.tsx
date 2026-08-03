@@ -2,21 +2,26 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useFlashMessage } from "./ProviderHooks";
 
-export function useToastMessage() {
+type msgTypes = 'success' | 'error' | 'warning' | 'info';
+
+export function useToastMessage(type: msgTypes = 'success')
+{
   const { showMessage } = useFlashMessage();
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const message = searchParams.get('message');
+  const messageParam = searchParams.get('message');
 
-  useEffect(() => {
-    if (!message) return;
-
-    showMessage({ text: message, type: 'success' });
+  useEffect(() =>
+  {
+    if (!messageParam) return;
+    showMessage({
+      text: decodeURIComponent(messageParam), type
+    });
     const newParams = new URLSearchParams(searchParams);
     newParams.delete('message');
     setSearchParams(newParams, { replace: true });
 
-  }, [message, searchParams, setSearchParams, showMessage]);
+  }, [messageParam, searchParams, setSearchParams, showMessage, type]);
 
 }
 

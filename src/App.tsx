@@ -1,59 +1,63 @@
 import { lazy } from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
+import "@fontsource-variable/bricolage-grotesque/index.css";
+import "@fontsource/geist-sans/400.css";
+import "@fontsource/geist-sans/500.css";
+import "@fontsource/geist-sans/600.css"; 
+import "@fontsource/dm-mono/400.css";
+import "@fontsource/dm-mono/500.css";
 import './App.css';
-import AuthLayout from './components/users/AuthLayout';
-import { loginAction, logoutAction, profileUploadAction, projectAction, signupAction, userProfileAction } from './utils/actions';
-import { projectsLoader, projectsRedirectLoader, userProfileLoader } from './utils/loaders';
-import ProjectLayout from './Views/ProjectsLayout';
-import UsersLayout from './Views/UsersLayout';
+import './components/general/style/Spinner.css';
+import './components/skeleton/style/Skeleton.css';
 
-const ProfileUpload = lazy(() => import('./Views/ProfileUpload'));
-const Logout = lazy(() => import('./Views/Logout'));
-const Error = lazy(() => import('./Views/ErrorView'));
+import AuthLayout from './components/general/Auth/AuthLayout';
+import { dashboardAction, loginAction, logoutAction, profileUploadAction, signupAction, taskAction, userProfileAction } from './utils/actions';
+import { dashboardLoader, subTasksLoader, tasksLoader } from './utils/loaders';
+import DashboardLayout from './Views/DashboardLayout';
+import Error from './Views/ErrorView';
+import NotFound from './Views/NotFound';
+import Homepage from './Views/Homepage';
+
+const TasksDashboard = lazy(() => import('./Views/TasksContainer'));
 const Register = lazy(() => import('./Views/Register'));
 const Login = lazy(() => import('./Views/Login'));
-
-const DashboardView = lazy(() => import('./Views/DashboardView'));
-const NotFound = lazy(() => import('./Views/NotFound'));
-
 
 
 const router = createBrowserRouter(createRoutesFromElements(
   <Route path={'/'}>
-    <Route index element={<h1>Homepage</h1>} />
+    <Route index element={<Homepage/>} />
     {/* TODO: add a redirect page */}
     <Route path={'projects'}
       id='project-root'
-      element={<ProjectLayout />}
-      loader={userProfileLoader}
+      element={<DashboardLayout />}
+      loader={dashboardLoader}
       errorElement={<Error />}>
-
-      <Route index element={<></>} loader={projectsRedirectLoader} />
 
       <Route
         path={':username'}
-        element={<DashboardView />}
-        loader={projectsLoader}
-        action={projectAction} >
+        element={<TasksDashboard />}
+        loader={tasksLoader} action={dashboardAction}>
 
+        <Route path={'tasks'} element={null} action={taskAction} />
         <Route
           path='profile'
           id='user-profile'
-          element={<UsersLayout />}
-          action={userProfileAction}>
-          <Route
-            path={'upload'}
-            action={profileUploadAction}
-            element={<ProfileUpload />}
-          />
-          <Route
-            path={'logout'}
-            element={<Logout />}
-            action={logoutAction} />
-        </Route>
+          element={null} action={userProfileAction}/>
+        <Route
+          path={'profile/upload'}
+          action={profileUploadAction}
+          element={null}
+        />
+        <Route
+          path={'profile/logout'}
+          element={null}
+          action={logoutAction} />
 
+        <Route
+          path={'tasks/:taskID/sub-tasks'}
+          element={null}
+          loader={subTasksLoader} />
       </Route>
-
     </Route>
     <Route
       path='auth'
@@ -71,10 +75,12 @@ const router = createBrowserRouter(createRoutesFromElements(
     </Route>
 
     <Route path='*' element={<NotFound />} />
-  </Route>))
+  </Route>
+))
 
 
-function App() {
+function App()
+{
   return (<RouterProvider router={router} />)
 }
 

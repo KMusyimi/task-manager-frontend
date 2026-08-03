@@ -1,30 +1,34 @@
 import { memo, useCallback } from "react";
 import useDeleteModal, { useContextMenu } from "../../hooks/ProviderHooks";
-import DuplicateProjectForm from "./DuplicateProjectForm";
+import DuplicateForm from "../general/DuplicateForm";
 
 
-interface ProjectContextParams {
-  openEditForm: () => void
+interface ProjectContextParams
+{
+  displayForm: (intent: 'add' | 'edit') => void;
 }
 
-const LoadEditForm = () => import("./EditProjectForm");
+const LoadEditForm = () => import("./ProjectsFormContainer");
 const LoadDeleteModal = () => import("../modals/DeleteModal");
 
 
-function ProjectContextMenu({ openEditForm }: ProjectContextParams) {
+function ProjectContextMenu({ displayForm }: ProjectContextParams)
+{
   const { setDeletePayload, displayModal } = useDeleteModal();
 
   const { closeMenu, formData, position } = useContextMenu();
   const { top, left } = position;
 
-  const displayEditForm = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
+  const displayEditForm = useCallback((e: React.MouseEvent<HTMLButtonElement>) =>
+  {
+    e.preventDefault();
     closeMenu();
-    openEditForm();
-  }, [closeMenu, openEditForm])
+    displayForm('edit');
+  }, [closeMenu, displayForm])
 
-  const handleDeleteBtn = useCallback((e: React.MouseEvent<HTMLButtonElement>, formdata: typeof formData) => {
-    e.stopPropagation();
+  const handleDeleteBtn = useCallback((e: React.MouseEvent<HTMLButtonElement>, formdata: typeof formData) =>
+  {
+    e.preventDefault();
     setDeletePayload(prev => ({
       ...prev,
       inputName: 'projectID',
@@ -35,36 +39,42 @@ function ProjectContextMenu({ openEditForm }: ProjectContextParams) {
     displayModal();
   }, [closeMenu, displayModal, setDeletePayload]);
 
-  const handleMouseEnterEdit = useCallback(() => {
+  const handleMouseEnterEdit = useCallback(() =>
+  {
     LoadEditForm().catch((e: unknown) => { console.error('Failed to prefetch lazy component ', e) })
   }, [])
-  const handleMouseEnterDelete = useCallback(() => {
+  const handleMouseEnterDelete = useCallback(() =>
+  {
     LoadDeleteModal().catch((e: unknown) => { console.error('Failed to prefetch lazy component ', e) })
-  }, [])
+  }, []);
+
+
 
   return (
-    <div className="context--menu"
-      style={{ top, left }} >
-      <div className="context-wrapper" onClick={(e) => { e.stopPropagation() }}>
-        <DuplicateProjectForm
-          closeContextMenu={closeMenu}
-          payloadID={formData.payloadID} />
-        <button
-          type="button"
-          className="edit-btn"
-          onMouseEnter={handleMouseEnterEdit}
-          onClick={displayEditForm}>
-          Edit
-        </button>
+    < >
+      <div className="context--menu" style={{ top, left }}  >
+        <div className="context-wrapper" onClick={(e) => { e.stopPropagation() }}>
 
-        <button type="button"
-          className="delete-btn"
-          onMouseEnter={handleMouseEnterDelete}
-          onClick={(e) => { handleDeleteBtn(e, formData) }}>
-          Delete
-        </button>
+          <DuplicateForm
+            closeMenu={closeMenu}
+            inputName='projectID'
+            inputValue={formData.payloadID}>
+            <button className="submit-btn menu-btn" type='submit'>Duplicate</button>
+          </DuplicateForm>
+          <button
+            type="button"
+            className="menu-btn edit-btn"
+            onMouseEnter={handleMouseEnterEdit}
+            onClick={displayEditForm}>Edit</button>
+
+          <button type="button"
+            style={{ color: 'var(--primary-red)' }}
+            className="menu-btn delete-btn"
+            onMouseEnter={handleMouseEnterDelete}
+            onClick={(e) => { handleDeleteBtn(e, formData) }}>Delete</button>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 

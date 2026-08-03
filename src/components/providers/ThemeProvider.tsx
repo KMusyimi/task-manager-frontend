@@ -1,10 +1,11 @@
 import { createContext, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 
 
-type Theme = 'dark' | 'light'
+export type Theme = 'dark' | 'light'
 
 
-interface ThemeContextTypes {
+export interface ThemeContextTypes
+{
   currentTheme: Theme;
   toggleTheme: () => void;
 }
@@ -12,37 +13,50 @@ interface ThemeContextTypes {
 // eslint-disable-next-line react-refresh/only-export-components
 export const ThemeContext = createContext<ThemeContextTypes>({
   currentTheme: "dark",
-  toggleTheme: function (): void {
+  toggleTheme: function (): void
+  {
     throw new Error("Function not implemented.");
   }
 });
 
 
-function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [currentTheme, setCurrentTheme] = useState<Theme>(() => {
-    const localStorageTheme = localStorage.getItem('prj-theme') as Theme | null;
+function ThemeProvider({ children }: { children: React.ReactNode })
+{
+  const [currentTheme, setCurrentTheme] = useState<Theme>(() =>
+  {
+    const localStorageTheme = localStorage.getItem('tasker-theme') as Theme | null;
     if (localStorageTheme) return localStorageTheme;
 
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
     return systemTheme ? 'dark' : 'light';
   });
-  
-  
-  const applyTheme = useCallback((theme: Theme) => {
+
+
+  const applyTheme = useCallback((theme: Theme, isManualClick = false) =>
+  {
     setCurrentTheme(theme);
     document.body.setAttribute('data-theme', theme);
-    localStorage.setItem('prj-theme', theme);
+
+    if (isManualClick)
+    {
+      localStorage.setItem('tasker-theme', theme);
+    }
   }, [])
-  
-  
-  useLayoutEffect(() => {
+
+
+  useLayoutEffect(() =>
+  {
     document.body.setAttribute('data-theme', currentTheme);
   }, [currentTheme]);
+
   // Handle System Theme Changes (only if no manual preference is set)
-  useEffect(() => {
+  useEffect(() =>
+  {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = (e: MediaQueryListEvent) => {
-      if (!localStorage.getItem('prj-theme')) {
+    const handleChange = (e: MediaQueryListEvent) =>
+    {
+      if (!localStorage.getItem('tasker-theme'))
+      {
         applyTheme(e.matches ? 'dark' : 'light');
       }
     };
@@ -52,9 +66,10 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [applyTheme]);
 
 
-  const toggleTheme = useCallback(() => {
+  const toggleTheme = useCallback(() =>
+  {
     const updatedTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    applyTheme(updatedTheme);
+    applyTheme(updatedTheme, true);
   }, [currentTheme, applyTheme])
 
 

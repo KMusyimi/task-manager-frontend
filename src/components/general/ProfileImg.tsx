@@ -1,48 +1,22 @@
-import { memo } from "react";
-import { API_URL } from "../../api";
-import IconWrapper from "./IconWrapper";
-import Overlay from "./Overlay";
+import { CSSProperties, memo } from "react";
 
-interface ProfileImgViewParams {
-  isViewImg: boolean;
-  imgUrl: string;
-  closeImgView: () => void
-}
 
-export const ProfileImgView = memo(({ isViewImg, closeImgView, imgUrl }: ProfileImgViewParams) => {
-  if (!isViewImg) {
-    return null;
-  }
+function AvatarWrapper({ imgUrl, version, style }: { imgUrl: string, version: number, style?: CSSProperties })
+{
   return (
-    <Overlay isActive={isViewImg} closeOverlay={closeImgView} zIndex={500}>
-      <div className="img-viewer" onClick={(e) => { e.stopPropagation() }}>
-        <button
-          type="button"
-          className="back-btn"
-          aria-label="back"
-          onClick={closeImgView}>
-          <IconWrapper className="back-icon" name="FaRegCircleXmark" />
-        </button>
-
-        <div className={`img-wrapper`}>
-          <ProfileImg imgUrl={imgUrl} />
-        </div>
-      </div>
-    </Overlay>
+    <div className="avatar-wrapper"
+      aria-label='button'
+      style={style}
+      role='button'>
+      <img
+        className="profile-img"
+        alt="user profile image"
+        fetchPriority={'high'}
+        loading="eager"
+        src={`${imgUrl}?v=${String(version)}`} />
+    </div>
   )
-})
-
-
-function ProfileImg({ imgUrl }: { imgUrl: string }) {
-  return (
-    <img
-      className="profile-img"
-      alt="user profile image"
-      fetchPriority={'high'}
-      loading="eager"
-      src={`${API_URL}/static/${imgUrl}`} />)
 }
 
-ProfileImgView.displayName = 'ProfileImgView';
 
-export default memo(ProfileImg);
+export default memo(AvatarWrapper);

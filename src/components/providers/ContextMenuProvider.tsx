@@ -1,18 +1,31 @@
-import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
-import type { AsideProject } from "../../models/ProjectsModel";
+import { createContext, MouseEventHandler, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import type { AsideProject, Task } from "../../models/DashboardModel";
 
-export interface MenuPosition {
+export interface MenuPosition
+{
   top: string | number
   left: string | number
 }
 
-export interface ContextMenuState {
+export interface OptionsParams
+{
+  label: string;
+  onClick?: MouseEventHandler;
+  onMouseEnter?: MouseEventHandler;
+}
+
+
+export interface ContextMenuState
+{
   isMenuOpen: boolean;
   position: MenuPosition;
   formData: { payloadID: string; projectName: string; color: string };
   displayMenu: (e: React.MouseEvent<HTMLButtonElement>, project: AsideProject) => void;
   closeMenu: () => void;
 }
+
+type CtxMenuData = AsideProject | Task
+
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const ContextMenuCtx = createContext<ContextMenuState>({
@@ -24,58 +37,71 @@ export const ContextMenuCtx = createContext<ContextMenuState>({
     'payloadID': "",
 
   },
-  displayMenu: function (): void {
+
+  displayMenu: function (): void
+  {
     throw new Error("Function not implemented.");
   },
-  closeMenu: function (): void {
+  closeMenu: function (): void
+  {
     throw new Error("Function not implemented.");
   }
 })
 
-export function ContextMenuProvider({ children }: { children: ReactNode }) {
+
+export function ContextMenuProvider({ children }: { children: ReactNode })
+{
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+
   const [position, setPosition] = useState<MenuPosition>({ top: 0, left: 0 });
   const [formData, setFormData] = useState(() => ({ payloadID: '', projectName: '', color: '' }));
 
-
   const closeMenu = useCallback(() => { setIsMenuOpen(false) }, []);
 
-  useEffect(() => {
+  useEffect(() =>
+  {
     if (!isMenuOpen) return;
 
-    const handleLayoutChange = () => {
+    const handleLayoutChange = () =>
+    {
       setIsMenuOpen(false);
     };
 
     window.addEventListener('resize', handleLayoutChange);
 
-    return () => {
+    return () =>
+    {
       window.removeEventListener('resize', handleLayoutChange);
-
     };
   }, [isMenuOpen]);
 
+  
 
-  const displayMenu = useCallback((e: React.MouseEvent<HTMLButtonElement>, project: AsideProject) => {
+  const displayMenu = useCallback((e: React.MouseEvent<HTMLButtonElement>, data: CtxMenuData) =>
+  {
     e.stopPropagation();
 
-    const { top, bottom, left } = e.currentTarget.getBoundingClientRect();
-    const menuHeight = 150;
-    const spaceBelow = window.innerHeight - bottom;
-
     setIsMenuOpen(true);
+    const { top, bottom, left } = e.currentTarget.getBoundingClientRect();
+    const menuHeight = 135;
 
-    setFormData(prev => ({
-      ...prev,
-      payloadID: project.projectID.toString(),
-      projectName: project.projectName,
-      color: project.color
-    }));
+    const spaceBelow = window.innerHeight - bottom;
 
     setPosition({
       top: spaceBelow < menuHeight ? top - menuHeight : bottom + 5,
-      left: left - 40
+      left: left - 65
     });
+
+    if ('projectID' in data)
+    {
+      setFormData(prev => ({
+        ...prev,
+        payloadID: data.projectID.toString(),
+        projectName: data.projectName,
+        color: data.color
+      }));
+    }
 
   }, []);
 
@@ -85,6 +111,4 @@ export function ContextMenuProvider({ children }: { children: ReactNode }) {
     <ContextMenuCtx value={memoData}>
       {children}
     </ContextMenuCtx>)
-
 }
-

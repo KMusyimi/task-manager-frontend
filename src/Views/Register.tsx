@@ -4,7 +4,7 @@ import useActionError from "../hooks/ActionErrorHook";
 import type { signupAction } from "../utils/actions";
 
 
-const RegistrationForm = lazy(() => import("../components/users/RegistrationForm"));
+const RegistrationForm = lazy(() => import("../components/general/Auth/RegistrationForm"));
 
 
 function Register(): JSX.Element {

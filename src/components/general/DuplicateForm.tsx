@@ -1,25 +1,43 @@
-import { memo } from "react";
-import { useFetcher } from "react-router-dom";
+import { FormEvent, memo, ReactNode, useCallback } from "react";
+import { Form, useFetcher, useRouteLoaderData } from "react-router-dom";
 import useActionError from "../../hooks/ActionErrorHook";
 import type { ActionFuncError } from "../../models/entity";
+import { dashboardLoader } from "../../utils/loaders";
 
 
-interface DuplicateFormTypes {
+interface DuplicateFormTypes
+{
   inputName: 'projectID' | 'taskID' | 'subTaskID';
-  formPayloadID: string
-  handleOnSubmit: (e: React.SubmitEvent<HTMLFormElement>) => void
+  inputValue: string;
+  closeMenu: () => void;
+  children: ReactNode;
 }
 
-function DuplicateForm({ inputName, formPayloadID, handleOnSubmit }: DuplicateFormTypes) {
+function DuplicateForm({ inputName, inputValue, closeMenu, children }: DuplicateFormTypes)
+{
+  const data = useRouteLoaderData<typeof dashboardLoader>('project-root');
+  const user = data?.user;
   const fetcher = useFetcher();
-   useActionError(fetcher.data as ActionFuncError);
- 
+  useActionError(fetcher.data as ActionFuncError);
+
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  const handleOnSubmit = useCallback((e: FormEvent<HTMLFormElement>) =>
+  {
+    e.preventDefault();
+    fetcher
+      .submit(e.currentTarget, { method: 'POST', action: `/projects/${user?.username ?? ''}` })
+      .then(closeMenu)
+      .catch((error: unknown) => { console.error('Error form failed to submit: ', error) });
+  }, [closeMenu, fetcher, user?.username]);
+
+  if (!user) return null;
+
   return (
-    <fetcher.Form method="post" action="." onSubmit={handleOnSubmit}>
-      <input type="hidden" name={inputName} value={formPayloadID} />
-      <input type="hidden" name="intent" value={'duplicate'} />
-      <button className="submit-btn" type='submit'>Duplicate</button>
-    </fetcher.Form>)
+    <Form method="post" action={`/projects/${user.username}`} onSubmit={handleOnSubmit}>
+      <input type="hidden" name={inputName} defaultValue={inputValue} />
+      <input type="hidden" name="intent" defaultValue={'duplicate'} />
+      {children}
+    </Form>)
 }
 
 export default memo(DuplicateForm);

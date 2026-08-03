@@ -1,5 +1,4 @@
 import { CSSProperties, memo } from 'react';
-import './style/Skeleton.css';
 
 
 interface SkeletonParams {
