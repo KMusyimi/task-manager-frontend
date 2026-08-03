@@ -20,7 +20,7 @@ export const FlashMessageCxt = createContext<ContextParams>({
 function FlashMessageProvider({ children }: { children: React.ReactNode }) {
   const [isVisible, setIsVisible] = useState(false);
   const [message, setMessage] = useState<MessageTypes>({ text: '', type: 'success' })
-  const TimeoutIdRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const TimeoutIdRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   useEffect(() => {
     return () => {

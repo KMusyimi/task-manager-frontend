@@ -19,7 +19,7 @@ function PasswordInputWrapper({ passwordData, ...rest }: inputProps)
   const [hidePassword, setHidePassword] = useState(true);
   const InputRef = useRef<HTMLInputElement>(null);
 
-  const toggleTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const toggleTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   useEffect(() =>
   {
@@ -58,7 +58,7 @@ function PasswordInputWrapper({ passwordData, ...rest }: inputProps)
 
     if (toggleTimeoutId)
     {
-      clearTimeout(toggleTimeoutRef.current)
+      clearTimeout(toggleTimeoutId)
     }
 
     setHidePassword(prev => !prev);
