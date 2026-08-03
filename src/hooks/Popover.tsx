@@ -1,4 +1,4 @@
-import {  useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export function usePopoverByIdx(idx: number, onToggleByIdx: (idx: number, isOpen: boolean) => void)
 {
@@ -10,9 +10,10 @@ export function usePopoverByIdx(idx: number, onToggleByIdx: (idx: number, isOpen
 
     if (!dropdown) return;
 
-    const handleToggle = (e: ToggleEvent) =>
+    const handleToggle = (e: Event) =>
     {
-      const isSystemOpen = e.newState === 'open';
+      const toggleEvent = e as ToggleEvent;
+      const isSystemOpen = toggleEvent.newState === 'open';
       onToggleByIdx(idx, isSystemOpen);
     }
 
@@ -23,7 +24,7 @@ export function usePopoverByIdx(idx: number, onToggleByIdx: (idx: number, isOpen
     }
   }, [idx, onToggleByIdx]);
 
-  return popoverRef 
+  return popoverRef
 
 }
 
@@ -38,9 +39,10 @@ export function usePopover(onToggle: (isOpen: boolean) => void)
 
     if (!dropdown) return;
 
-    const handleToggle = (e: ToggleEvent) =>
+    const handleToggle = (e: Event) =>
     {
-      const isSystemOpen = e.newState === 'open';
+      const toggleEvent = e as ToggleEvent;
+      const isSystemOpen = toggleEvent.newState === 'open';
       onToggle(isSystemOpen);
     }
 
