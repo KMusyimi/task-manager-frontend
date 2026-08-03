@@ -2,7 +2,8 @@ import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 
 import { FaEye, FaEyeSlash } from 'react-icons/fa6';
 
-interface inputProps {
+interface inputProps
+{
   id?: string;
   name: string;
   placeholder?: string
@@ -13,33 +14,41 @@ interface inputProps {
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
 
-function PasswordInputWrapper({ passwordData, ...rest }: inputProps) {
+function PasswordInputWrapper({ passwordData, ...rest }: inputProps)
+{
   const [hidePassword, setHidePassword] = useState(true);
   const InputRef = useRef<HTMLInputElement>(null);
 
   const toggleTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  useEffect(() => {
+  useEffect(() =>
+  {
     const btnTimeoutId = toggleTimeoutRef.current;
 
-    return () => {
-      if (btnTimeoutId) {
+    return () =>
+    {
+      if (btnTimeoutId)
+      {
         clearTimeout(btnTimeoutId);
       }
     }
   }, []);
 
-  const handleOnFocus = useCallback(() => {
-    if (InputRef.current) {
+  const handleOnFocus = useCallback(() =>
+  {
+    if (InputRef.current)
+    {
       const passwordInput = InputRef.current;
       passwordInput.focus();
     }
   }, []);
 
 
-  const togglePasswordField = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+  const togglePasswordField = useCallback((e: React.MouseEvent<HTMLButtonElement>) =>
+  {
     e.stopPropagation();
-    if (InputRef.current) {
+    if (InputRef.current)
+    {
       const passwordInput = InputRef.current;
       passwordInput.focus();
       passwordInput.setSelectionRange(passwordInput.value.length, passwordInput.value.length);
@@ -47,21 +56,25 @@ function PasswordInputWrapper({ passwordData, ...rest }: inputProps) {
 
     const toggleTimeoutId = toggleTimeoutRef.current;
 
-    if (toggleTimeoutId) {
+    if (toggleTimeoutId)
+    {
       clearTimeout(toggleTimeoutRef.current)
     }
 
     setHidePassword(prev => !prev);
 
-    const timeoutId = window.setTimeout(() => {
+    const timeoutId = setTimeout(() =>
+    {
       setHidePassword(true);
     }, 500)
     toggleTimeoutRef.current = timeoutId;
 
   }, []);
 
-  const handleOnKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === ' ') {
+  const handleOnKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) =>
+  {
+    if (e.key === ' ')
+    {
       e.preventDefault();
     }
   }, []);
@@ -86,9 +99,9 @@ function PasswordInputWrapper({ passwordData, ...rest }: inputProps) {
         className="pwd-toggle--btn"
         onClick={togglePasswordField}>
         <i className='icon'>
-          {hidePassword ? <FaEye/> : <FaEyeSlash/>}
+          {hidePassword ? <FaEye /> : <FaEyeSlash />}
         </i>
-        
+
       </button>
     </div>
   )

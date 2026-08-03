@@ -20,7 +20,7 @@ export const FlashMessageCxt = createContext<ContextParams>({
 function FlashMessageProvider({ children }: { children: React.ReactNode }) {
   const [isVisible, setIsVisible] = useState(false);
   const [message, setMessage] = useState<MessageTypes>({ text: '', type: 'success' })
-  const TimeoutIdRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const TimeoutIdRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {
@@ -37,7 +37,7 @@ function FlashMessageProvider({ children }: { children: React.ReactNode }) {
     setMessage({ text, type });
     setIsVisible(true);
 
-    const timeoutId = window.setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       setIsVisible(false);
       setMessage({ text: '', type: 'success' });
     }, 3000);
