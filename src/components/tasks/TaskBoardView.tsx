@@ -166,6 +166,7 @@ function TaskBoard({ tasks, isMobile, openForm }: TaskBoardParams)
   const { username } = useParams<{ username: string }>();
 
   const [boardData, setBoardData] = useState<KanbanColumn[]>(() => tasks);
+  console.log(boardData)
   const [, startTransition] = useTransition();
 
   const columnRefs = useRef<Record<number, HTMLDivElement | null>>({});
@@ -259,7 +260,7 @@ function TaskBoard({ tasks, isMobile, openForm }: TaskBoardParams)
     })
   };
 
-  const boardColumns = isMobile ? `repeat(1, minmax(285px, 85svw))` : `repeat(${boardData.length.toString()}, minmax(285px, 1fr))`;
+  const boardColumns = isMobile ? `repeat(1, minmax(285px, 85svw))` : `repeat(${boardData.length > 0 ? '3' : '3'}, minmax(285px, 1fr))`;
 
 
   return (

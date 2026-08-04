@@ -425,9 +425,10 @@ input[type='checkbox']:focus-visible~.custom-checkbox {
   background-color: var(--bg-card);
   color: var(--text-muted);
   font-size: 0.8rem;
+  width: 100%;
   font-weight: 500;
   white-space: nowrap;
-  border-radius: .5em;
+  border-radius: .8em;
   outline-color: transparent;
   box-shadow: var(--card-shadow);
   transition: color .25s linear, border-color .25s linear;
