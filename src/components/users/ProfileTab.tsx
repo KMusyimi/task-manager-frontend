@@ -46,7 +46,7 @@ function ProfileTab({ user, navigateTo }: MyProfileParams)
   return (<>
     <div className="field-wrapper tab-section">
       <span className="field-title">about</span>
-      <span className="field-text">{user.bio}</span>
+      <span className="field-text">{user.bio ?? "Add bio data in edit tab"}</span>
     </div>
 
     {PROFILE_CONFIG.map(config => (

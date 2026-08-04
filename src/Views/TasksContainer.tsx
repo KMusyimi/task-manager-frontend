@@ -8,7 +8,7 @@ import { SubTaskProvider } from "../components/providers/SubTasksProvider";
 import Skeleton from "../components/skeleton/Skeleton";
 import TaskAddFormModal from "../components/tasks/TaskAddForm";
 import TaskBoard from "../components/tasks/TaskBoardView";
-import { TaskListView } from "../components/tasks/TaskListView";
+import TaskListView from "../components/tasks/TaskListView";
 import { useMediaQuery } from "../hooks/ViewPortHooks";
 import { KanbanColumn, SegmentedTasksResponse } from "../models/DashboardModel";
 import { DashboardCtxParams } from "./DashboardLayout";
@@ -68,6 +68,7 @@ function TasksView()
   {
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
   }, [projectID]);
+
 
   return (
     <>

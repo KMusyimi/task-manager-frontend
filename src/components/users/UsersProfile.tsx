@@ -156,7 +156,7 @@ function UsersProfile({ closeProfileModal }: UserProfileParams)
 
                   <div className="el-flx" style={{ flexDirection: 'column', marginBottom: '.5em' }}>
                     <h4 style={{ letterSpacing: '-0.025em', fontWeight: 'bold', fontSize: '1.15rem' }}>{user.username}</h4>
-                    <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{user.role} {user.department ? `• ${user.department}` : ''}</span>
+                    <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{user.role ?? 'Role'} {user.department ? `• ${user.department}` : '• department'}</span>
                   </div>
                 </div>
 

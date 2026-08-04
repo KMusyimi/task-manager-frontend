@@ -258,7 +258,7 @@ export async function profileUploadAction({ params, request }: ActionFunctionArg
     console.error('userProfileAction edit-profile errors ->', response.message)
     return { success: false, error: response.message, status: response.status, message: null }
   }
-  return redirect(`.?message=${response.message}`)
+  return { success: true, message: response.message, error: null, status: null }
 }
 
 

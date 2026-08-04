@@ -267,7 +267,7 @@ function DashboardLayout()
                       <DropdownContent projects={projects} />
                     </Suspense>
                   </ul>
-                ) : <p className="empty-state">No projects found</p>}
+                ) : <p className="empty-state" style={{ fontSize: ".825rem", color: "var(--text-muted)", margin: '0 auto' }}>Currently No project</p>}
               </SidebarWrapper>
             </aside>
 

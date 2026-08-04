@@ -4,12 +4,12 @@ import type { CreateUserParams } from "../../../models/UserModel";
 import PasswordInputWrapper from "../PasswordInputWrapper";
 import Spinner from "../Spinner";
 
-const steps = [1, 2, 3]
+// const steps = [1, 2, 3]
 
 
 export default function RegistrationForm()
 {
-  const [formSteps, setFormSteps] = useState(() => steps[0]);
+  // const [formSteps, setFormSteps] = useState(() => steps[0]);
 
   const navigation = useNavigation();
   const status = navigation.state;
@@ -96,7 +96,7 @@ export default function RegistrationForm()
       </div>
 
       <div className="btn-wrapper">
-        <button className="submit--btn" type="submit" disabled={status === 'submitting'}>{
+        <button className="submit--btn el-flx" type="submit" disabled={status === 'submitting'}>{
           status === 'submitting' ?
             <>
               <Spinner style={{ width: "1em", height: '1em', margin: 0 }} />Creating Account...</> : 'Register'
