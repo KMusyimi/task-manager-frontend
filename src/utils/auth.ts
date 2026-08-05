@@ -17,7 +17,7 @@ export const getAuthToken = (redirectPath?: string) =>
 {
   const token = localStorage.getItem('token');
 
-  if (!token)
+  if (!token )
   {
     console.error('User token missing.')
     const params = new URLSearchParams({
@@ -54,6 +54,20 @@ export const storeAccessToken = async (token: string): Promise<void> =>
     }
   });
 };
+
+
+export function isTokenValid()
+{
+  const token = getAuthToken();
+  try
+  {
+    const decoded: { exp: number } = jwtDecode(token);
+    return decoded.exp * 1000 > Date.now();
+  } catch
+  {
+    return false;
+  }
+}
 
 
 export const checkValidToken = async () =>

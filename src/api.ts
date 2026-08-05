@@ -4,7 +4,7 @@ import type { ErrorDetail, ProjectResponseSuccess, SubmitData } from "./models/e
 import type { UserResponse } from "./models/UserModel";
 import authHeader, { storeAccessToken } from "./utils/auth";
 
-// export const API_URL = 'http://localhost:8000';
+// export const API_BASE_URL = 'http://localhost:8000';
 // export const API_BASE_URL = 'https://task-manager-web-app-fe7y.onrender.com';
 export const API_BASE_URL = String(import.meta.env.VITE_API_URL) || "http://localhost:8000";
 
@@ -45,6 +45,7 @@ export async function loginUser(formData: SubmitData)
 
   const { accessToken } = respData;
   await storeAccessToken(accessToken);
+  localStorage.setItem('username', respData.username);
 
   return { message: respData.message, login_username: respData.username };
 

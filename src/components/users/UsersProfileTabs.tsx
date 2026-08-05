@@ -41,7 +41,7 @@ function UsersProfileTabs({ activeIdx = 0, direction, children }: SubMenuParams)
           x: { type: "spring", stiffness: 300, damping: 30 },
           opacity: { duration: 0.3 },
         }}
-        className="tab w-full h-full text-zinc-300"
+        className="tab"
       >
         {children}
       </motion.div>

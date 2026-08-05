@@ -166,7 +166,7 @@ function TaskBoard({ tasks, isMobile, openForm }: TaskBoardParams)
   const { username } = useParams<{ username: string }>();
 
   const [boardData, setBoardData] = useState<KanbanColumn[]>(() => tasks);
-  console.log(boardData)
+  console.log(tasks)
   const [, startTransition] = useTransition();
 
   const columnRefs = useRef<Record<number, HTMLDivElement | null>>({});

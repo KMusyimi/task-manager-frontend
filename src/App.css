@@ -223,7 +223,7 @@ body[data-theme="dark"] .icon-indigo {
 .header-nav ul .nav-link {
   color: var(--text-muted);
   font-size: .8rem;
-  padding: .5em .45em;
+  padding: .5em .65em;
   border-radius: .8em;
   will-change: font-weight;
 }
@@ -236,7 +236,11 @@ body[data-theme="dark"] .icon-indigo {
 }
 
 .header-nav ul .signup-link {
+  color: var(--bg-main);
   font-weight: 500;
+}
+.header-nav ul .signup-link:hover {
+  color: var(--bg-main);
 }
 
 .main-nav--mobile {
@@ -271,7 +275,7 @@ body[data-theme="dark"] .icon-indigo {
   overflow: hidden;
 }
 
- .gradient-container {
+.gradient-container {
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -365,7 +369,11 @@ body[data-theme="dark"] .icon-indigo {
 
 
 .auth-links--wrapper {
-  margin-bottom: 2rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 3rem;
 }
 
 .auth-links--wrapper>a {
@@ -376,21 +384,32 @@ body[data-theme="dark"] .icon-indigo {
   width: min(100%, 400px);
   margin: 0 auto;
   padding: 0.75rem 1.5rem;
-  font-size: .85rem;
+  font-size: .825rem;
   font-weight: 600;
   border-radius: 0.75rem;
   border: none;
-  cursor: pointer;
 
-
-  box-shadow: 0 3px 15px -3px var(--text-color, rgba(9, 9, 11, 0.2)),
-    0 4px 3px -4px var(--text-color, rgba(9, 9, 11, 0.2));
 
   transition: opacity 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+.auth-links--wrapper>a:first-child {
+  color: var(--bg-main);
+  box-shadow: 0 10px 15px -3px rgba(var(--text-color), 0.2);
+
+  transition: opacity 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-links--wrapper>a:last-child {
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+}
+
 .auth-links--wrapper>a:hover {
   opacity: 0.9;
+}
+.auth-links--wrapper>a:last-child:hover {
+  color: inherit;
 }
 
 .auth-links--wrapper>a:active {
@@ -1209,7 +1228,7 @@ body[data-theme="dark"] .icon-indigo {
   z-index: 200;
   width: 275px;
   height: 100%;
-  transition: left .45s linear;
+  transition: left .25s ease-in-out;
 }
 
 .project-sidebar.open {
@@ -1784,6 +1803,14 @@ body[data-theme="dark"] .icon-indigo {
 @media only screen and (min-width: 640px) {
   .homepage-header .header-wrapper {
     padding: 1.15em 1.5em;
+  }
+
+  .auth-links--wrapper {
+    flex-direction: row;
+  }
+
+  .auth-links--wrapper>a {
+    width: auto;
   }
 
   .social-proof--wrapper {

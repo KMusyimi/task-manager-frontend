@@ -189,7 +189,6 @@ function UsersProfile({ closeProfileModal }: UserProfileParams)
                         <motion.div
                           layoutId="activeTabUnderline"
                           style={{ position: 'absolute', background: 'var(--primary-blue)', height: '2px', bottom: 0, left: 0, width: '100%' }}
-                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500"
                           transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         />
                       )}
@@ -199,7 +198,7 @@ function UsersProfile({ closeProfileModal }: UserProfileParams)
               </div>
             </div>
 
-            <motion.div className="tab-container relative h-48 overflow-hidden mt-4 bg-zinc-900 rounded-xl p-4"
+            <motion.div className="tab-container"
               variants={profileVariants}
               initial='enter'
               animate='center'
@@ -207,7 +206,7 @@ function UsersProfile({ closeProfileModal }: UserProfileParams)
               transition={{
                 opacity: { duration: 0.2 },
               }}
-              style={{ overflow: "hidden", overflowY: 'auto', minHeight: '45svh' }}>
+              style={{ overflow: "hidden", overflowY: 'auto', minHeight: '45svh', willChange:"min-height" }}>
               <UsersProfileTabs
                 activeIdx={activeIdx}
                 direction={direction}>

@@ -99,16 +99,17 @@ const TESTIMONIALS = [
   },
 ];
 
-const isLight: CSSProperties = { color: '#fff', backgroundColor: '#0F0F10' };
-const isDark: CSSProperties = { color: '#0F0F10', backgroundColor: '#fff' };
+const isLight: CSSProperties = { backgroundColor: '#0F0F10' };
+const isDark: CSSProperties = { backgroundColor: '#fff' };
 
 function Homepage()
 {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const letters = Array.from('Ship faster with');
+  const username = localStorage.getItem('username');
 
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const { currentTheme} = useThemeContext();
+  const { currentTheme } = useThemeContext();
   const heroTotal = 15;
   const heroCompleted = 10;
   const percentage = Math.round((heroCompleted / heroTotal) * 100);
@@ -205,11 +206,16 @@ function Homepage()
               Tasker gives your team kanban boards, list views, subtask checklists, and sprint analytics — all in one polished workspace.
             </p>
 
-            <div className="auth-links--wrapper">
+            <div className="auth-links--wrapper el-flx">
               <Link to={'/auth/signup'}
                 className="signup-link el-flx" style={signUpLinkStyles}
               >Start for free <IconWrapper name='FaAngleRight' />
               </Link>
+              {username && <Link to={`/projects/${username}`}
+                className="dashboard-link el-flx"
+              >View dashboard<IconWrapper name='FaAngleRight' />
+              </Link>}
+
             </div>
             {/* Social proof */}
             <div className="social-proof--wrapper el-flx">

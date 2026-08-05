@@ -1,6 +1,6 @@
-import { type LoaderFunctionArgs } from "react-router-dom";
+import { redirect, type LoaderFunctionArgs } from "react-router-dom";
 import { getProjects, getSubTasks, getTasksBoard, getTasksList, UserProfile } from "../api";
-import { requireAuthToken } from "./auth";
+import { isTokenValid, requireAuthToken } from "./auth";
 
 
 
@@ -8,6 +8,18 @@ const taskObj = {
   list: ({ username, projectQuery, page }: { username: string, projectQuery: string, page: string }) => getTasksList(username, projectQuery, page),
 
   board: ({ username, projectQuery }: { username: string, projectQuery: string }) => getTasksBoard(username, projectQuery)
+}
+
+export function landingLoader()
+{
+  const token = localStorage.getItem('token');
+  const username = localStorage.getItem('username');
+
+  if (token && isTokenValid() && username)
+  {
+    return redirect(`/projects/${username}`);
+  }
+  return null;
 }
 
 export async function authenticateLoader(request: Request)
@@ -47,7 +59,6 @@ export async function tasksLoader({ params, request }: LoaderFunctionArgs)
   const searchParams = url.searchParams;
 
   const rawProjectID = searchParams.get("project_id");
-  console.log('loader project id -> ', rawProjectID);
 
   const isValidProjectId =
     rawProjectID !== null &&
